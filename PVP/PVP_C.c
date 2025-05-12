@@ -83,8 +83,8 @@ void show_game_over(const char *message) {
 
 int main() {
     setlocale(LC_ALL, "");
-    signal(SIGINT, SIG_IGN);
     signal(SIGTSTP, SIG_IGN);
+    system("stty intr ^P");
 
     char nickname[32];
     printf("Enter your nickname: ");
