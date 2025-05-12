@@ -16,7 +16,7 @@
 #include "shared_eco.h"
 #include "json_topic.h"
 
-#define SERVER_IP "127.0.0.1"
+#define SERVER_IP "172.31.149.95"
 #define PORT 5124
 #define BUFFER_SIZE 1024
 #define LOG_LINES 5
