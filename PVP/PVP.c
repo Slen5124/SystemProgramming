@@ -1,4 +1,4 @@
-// PVP.c - 서버 코드: 완전한 apply_action 및 상태 적용 추가
+// PVP.c - Robust server with improved nickname handling and logging
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -17,48 +17,10 @@
 #define DEFAULT_DATA 100
 #define DEFAULT_ATTACK 5
 #define DEFAULT_DEFENSE 3
-#define BLOCK_DURATION 3000
-#define COUNTER_WINDOW 500
 
 int set_nonblocking(int fd) {
     int flags = fcntl(fd, F_GETFL, 0);
     return fcntl(fd, F_SETFL, flags | O_NONBLOCK);
-}
-
-// 내부 함수: 딜레이가 끝난 행동 실제 적용
-static void apply_action(PlayerState *actor, PlayerState *opponent) {
-    ActionType action = actor->current_action;
-
-    switch (action) {
-        case ACTION_CHARGE_WEAK:
-            actor->charged_attack += actor->attack_power * 3;
-            break;
-        case ACTION_CHARGE_STRONG:
-            actor->charged_attack += actor->attack_power * 5;
-            break;
-        case ACTION_FIRE:
-            if (opponent->is_blocking && get_current_time_ms() <= opponent->block_end_ms) {
-                // 공격이 막힘 → 무효화
-                // 로그를 남길 수 있음
-            } else if (opponent->is_counter_ready &&
-                       get_current_time_ms() - opponent->counter_window_start_ms <= COUNTER_WINDOW) {
-                opponent->data -= actor->charged_attack; // 카운터 성공
-            } else {
-                opponent->data -= actor->charged_attack; // 일반 공격 적용
-            }
-            actor->charged_attack = 0;
-            break;
-        case ACTION_BLOCK:
-            actor->is_blocking = 1;
-            actor->block_end_ms = get_current_time_ms() + BLOCK_DURATION;
-            break;
-        case ACTION_COUNTER:
-            actor->is_counter_ready = 1;
-            actor->counter_window_start_ms = get_current_time_ms();
-            break;
-        default:
-            break;
-    }
 }
 
 int main() {
@@ -92,24 +54,36 @@ int main() {
         if (client_fd[i] < 0) {
             perror("Accept failed"); exit(EXIT_FAILURE);
         }
-        printf("✅ Player %d connected.\n", i);
+        printf("✅ Player %d connected. Waiting for nickname...\n", i);
         set_nonblocking(client_fd[i]);
 
-        int bytes = recv(client_fd[i], buffer, BUFFER_SIZE - 1, 0);
-        if (bytes > 0) {
-            buffer[bytes] = '\0';
-            parse_nickname_from_json(buffer, players[i].nickname, 32);
-            players[i].id = i;
-        } else {
-            strcpy(players[i].nickname, "???");
-            players[i].id = i;
+        // 닉네임 수신 루프 (최대 3초 대기)
+        int attempts = 300;
+        int bytes = 0;
+        while (attempts-- > 0) {
+            bytes = recv(client_fd[i], buffer, BUFFER_SIZE - 1, MSG_DONTWAIT);
+            if (bytes > 0) break;
+            usleep(10000); // 10ms x 300 = 3초 대기
         }
 
+        if (bytes <= 0) {
+            fprintf(stderr, "❌ Failed to receive nickname from Player %d. Defaulting to Unknown.\n", i);
+            strcpy(players[i].nickname, "Unknown");
+        } else {
+            buffer[bytes] = '\0';
+            parse_nickname_from_json(buffer, players[i].nickname, 32);
+        }
+
+        players[i].id = i;
         players[i].data = DEFAULT_DATA;
         players[i].attack_power = DEFAULT_ATTACK;
         players[i].defense_power = DEFAULT_DEFENSE;
         players[i].current_action = ACTION_NONE;
         players[i].charged_attack = 0;
+
+        char ack[BUFFER_SIZE];
+        snprintf(ack, BUFFER_SIZE, "{\"event\":\"Registered as %s\"}\n", players[i].nickname);
+        send(client_fd[i], ack, strlen(ack), 0);
     }
 
     printf("🎮 Both players registered. Game started.\n");
