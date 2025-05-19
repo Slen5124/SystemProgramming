@@ -1,117 +1,138 @@
 #include "game_logic.h"
 #include "shared_eco.h"
-#include <stdio.h>
 
-// 내부 함수: 딜레이가 끝난 행동 실제 적용
-static void apply_action(PlayerState *actor, PlayerState *opponent) {
-    ActionType action = actor->current_action;
-
-    switch (action) {
+// 즉시 적용
+void apply_action(PlayerState *actor, PlayerState *opponent) {
+    long long now = get_current_time_ms();
+    switch (actor->current_action) {
         case ACTION_CHARGE_WEAK:
             actor->charged_attack += actor->attack_power * 3;
             break;
+
         case ACTION_CHARGE_STRONG:
             actor->charged_attack += actor->attack_power * 5;
             break;
-        case ACTION_ATTACK:
-            if (opponent->is_blocking && get_current_time_ms() <= opponent->block_end_ms) {
-                // 공격이 막힘
-            } else if (opponent->is_counter_ready &&
-                       get_current_time_ms() - opponent->counter_window_start_ms <= COUNTER_WINDOW) {
-                opponent->data -= actor->charged_attack; // 카운터 성공
-            } else {
-                opponent->data -= actor->charged_attack; // 일반 공격 적용
-            }
+
+        case ACTION_ATTACK: {
+            int dmg = actor->charged_attack;
             actor->charged_attack = 0;
+
+            // 1) 방어막 우선 적용
+            if (opponent->defense_shield > 0 && now <= opponent->block_end_ms) {
+                int sh = opponent->defense_shield;
+                dmg = (dmg > sh ? dmg - sh : 0);
+                opponent->defense_shield = 0;
+            }
+            // 2) 카운터 성공 판정
+            else if (opponent->is_counter_ready &&
+                     now - opponent->counter_window_start_ms <= COUNTER_WINDOW) {
+                // 반사
+                opponent->data -= dmg;
+                opponent->is_counter_ready = 0;
+                opponent->current_action   = ACTION_NONE;
+                opponent->is_in_delay      = 0;
+                return;
+            }
+            // 3) 일반 데미지
+            opponent->data -= dmg;
             break;
-        case ACTION_BLOCK:
-            actor->is_blocking = 1;
-            actor->block_end_ms = get_current_time_ms() + BLOCK_DURATION;
-            break;
+        }
+
         case ACTION_COUNTER:
-            // 실제 효과는 공격 타이밍에 반영됨
-            break;
+            // 카운터 동작은 check_and_apply_actions에서 처리
+            return;
+
         default:
             break;
     }
 
+    // ACTION_COUNTER일 때는 위에서 return되어 이 코드를 건너뜁니다
     actor->current_action = ACTION_NONE;
-    actor->is_in_delay = 0;
+    actor->is_in_delay    = 0;
 }
 
+// 입력 처리
 void process_action(PlayerState *actor, PlayerState *opponent, ActionType action) {
     long long now = get_current_time_ms();
-
-    // 딜레이 중이면 무시
     if (actor->is_in_delay && now < actor->delay_until_ms) return;
 
-    // 카운터는 타이밍 기준 특별 처리
+    // COUNTER 준비
     if (action == ACTION_COUNTER) {
-        actor->is_counter_ready = 1;
+        actor->is_counter_ready        = 1;
         actor->counter_window_start_ms = now;
-        actor->is_in_delay = 1;
-        actor->delay_until_ms = now + COUNTER_WINDOW;
-        actor->current_action = action;
+        actor->is_in_delay             = 1;
+        actor->delay_until_ms          = now + COUNTER_WINDOW;
+        actor->current_action          = ACTION_COUNTER;
         return;
     }
 
-    // 행동 예약 + 딜레이 시작
+    // BLOCK 즉시 방어막, 2초 딜레이
+    if (action == ACTION_BLOCK) {
+        actor->defense_shield = actor->defense_power * 3;
+        actor->block_end_ms   = now + BLOCK_DURATION;
+        actor->is_in_delay    = 1;
+        actor->delay_until_ms = now + DELAY_BLOCK;
+        actor->current_action = ACTION_NONE;
+        return;
+    }
+
+    // 나머지 행동 예약
     actor->current_action = action;
-    actor->is_in_delay = 1;
+    actor->is_in_delay    = 1;
     switch (action) {
         case ACTION_CHARGE_WEAK:
-            actor->delay_until_ms = now + DELAY_CHARGE_WEAK;
-            break;
+            actor->delay_until_ms = now + DELAY_CHARGE_WEAK; break;
         case ACTION_CHARGE_STRONG:
-            actor->delay_until_ms = now + DELAY_CHARGE_STRONG;
-            break;
+            actor->delay_until_ms = now + DELAY_CHARGE_STRONG; break;
         case ACTION_ATTACK:
-            actor->delay_until_ms = now + DELAY_ATTACK;
-            break;
-        case ACTION_BLOCK:
-            actor->delay_until_ms = now + DELAY_BLOCK;
-            break;
+            actor->delay_until_ms = now + DELAY_ATTACK; break;
         default:
-            actor->delay_until_ms = now + 1000; // fallback delay
-            break;
+            actor->delay_until_ms = now + 1000; break;
     }
 }
 
+// 게임 종료 체크
 int is_game_over(PlayerState *p1, PlayerState *p2) {
-    return (p1->data <= 0 || p2->data <= 0);
+    return p1->data <= 0 || p2->data <= 0;
 }
 
+// 승자 판단
 int get_winner(PlayerState *p1, PlayerState *p2) {
-    if (p1->data <= 0 && p2->data <= 0) return -1; // 무승부
+    if (p1->data <= 0 && p2->data <= 0) return -1;
     if (p1->data <= 0) return 1;
     if (p2->data <= 0) return 0;
-    return -1; // 게임 진행 중
+    return -2;
 }
 
-// 외부에서 주기적으로 호출 필요
+// 매 틱 호출
 void check_and_apply_actions(PlayerState *p1, PlayerState *p2) {
     long long now = get_current_time_ms();
 
+    // 1) p1 행동부터 적용, 죽으면 p2 행동 skip
     if (p1->is_in_delay && now >= p1->delay_until_ms) {
         apply_action(p1, p2);
+        if (p2->data <= 0) return;
     }
+    // 2) p2 행동 적용
     if (p2->is_in_delay && now >= p2->delay_until_ms) {
         apply_action(p2, p1);
+        if (p1->data <= 0) return;
     }
 
-    // 카운터 실패 처리
+    // 3) 카운터 실패 처리
     if (p1->current_action == ACTION_COUNTER &&
         p1->is_counter_ready && now >= p1->delay_until_ms) {
-        p1->data -= COUNTER_FAIL_DAMAGE;
+        // 실패 시 상대 공격력 피해
+        p1->data -= p2->attack_power;
         p1->is_counter_ready = 0;
-        p1->current_action = ACTION_NONE;
-        p1->is_in_delay = 0;
+        p1->current_action   = ACTION_NONE;
+        p1->is_in_delay      = 0;
     }
     if (p2->current_action == ACTION_COUNTER &&
         p2->is_counter_ready && now >= p2->delay_until_ms) {
-        p2->data -= COUNTER_FAIL_DAMAGE;
+        p2->data -= p1->attack_power;
         p2->is_counter_ready = 0;
-        p2->current_action = ACTION_NONE;
-        p2->is_in_delay = 0;
+        p2->current_action   = ACTION_NONE;
+        p2->is_in_delay      = 0;
     }
 }
