@@ -1,16 +1,13 @@
 #!/bin/bash
 
-echo "[INFO] Updating test scripts to the latest version..."
+# 커밋 메시지를 입력받거나 기본 메시지 사용
+MSG=${1:-"update: sync all project files"}
 
-# 일반적으로 전체 서브모듈 초기화 & 업데이트
-git submodule init
-git submodule update --remote --merge
+echo "📦 Adding files..."
+git add .
 
-if [ $? -ne 0 ]; then
-  echo "[ERROR] Failed to update test scripts. Exiting."
-  exit 1
-fi
+echo "📝 Committing..."
+git commit -m "$MSG"
 
-export LAB_HOME=$(pwd)
-bash ./submit.sh "$1"
-
+echo "🚀 Pushing to GitHub..."
+git push origin main
