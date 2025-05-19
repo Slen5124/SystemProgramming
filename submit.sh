@@ -12,5 +12,5 @@ if [ $? -ne 0 ]; then
 fi
 
 export LAB_HOME=$(pwd)
-bash test/submit.sh "$1"
+bash ./submit.sh "$1"
 
