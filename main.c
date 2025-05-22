@@ -9,7 +9,7 @@
 
 void sig_pause(int signal){
     if(pause_access){pause_screen(store_access);}
-    //else // PVP전투중에 pause 눌렀을 때.
+    else{printf("전투 중에 정지가 불가능합니다.\n");} // PVP전투중에 pause 눌렀을 때.
 }
 
 int main() {
@@ -18,28 +18,20 @@ int main() {
     //settings.c_iflag &= ~IXON; //
     //tcsetattr(STDIN_FILENO, TCSANOW, &settings);
 
-
     signal(SIGQUIT, sig_pause); // SIGQUIT (Ctrl+\)를 PAUSE로
-    //signal(SIGINT, SIG_IGN);  // SIGINT (Ctrl+C)도 무시
+    signal(SIGINT, SIG_IGN);  // SIGINT (Ctrl+C)도 무시
     
-
     setlocale(LC_ALL, "ko_KR.utf-8");
     initscr();
-    if (COLS < WIDTH || LINES < HEIGHT) {
-    endwin();
-    printf("🚨 DIVER : ONELIFE의 화면은 %dx%d으로 제작되었습니다. 터미널 크기를 %dx%d이상으로 설정하세요!\n",WIDTH, HEIGHT, WIDTH, HEIGHT);
-    exit(1);
-    }
+
+    size_check();
 
     const char *client_name = "Player001";
     start_screen(client_name);  // 시작 화면 띄움
-    start_time = time(NULL);
-
-    int cnt = 0;
-    while(cnt++<5){
-        int choice = store_menu_ui(); // 상점 기능 호출
-        handle_upgrade(choice);    // 강화 기능 수행
-    }
+    
+    call_store();
+    
+    //reset_stat();
     endwin();
     return 0;
 
