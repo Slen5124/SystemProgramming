@@ -19,10 +19,20 @@ extern int winning_streak;
 extern int data;
 extern int atk_stat;
 extern int dfs_stat;
+
 extern int pve_start_bit;
-extern float pve_strong_atk_stat;
+extern int pve_data_intake;
+extern int pve_strong_atk_stat;
+
+extern int pvp_charge_minus;
+extern float pvp_counter_atk_power_stat;
+extern float pvp_charge_strong;
+
 extern int buy_atk_cnt;
 extern int buy_dfs_cnt;
+
 extern int ability_sort;
-extern bool ability_dup_check[10];
+extern bool ability_dup_check[7];
+
+
 #endif

@@ -124,7 +124,6 @@ void start_screen(const char *client_name) {
 
         ch = getch();
         if (ch == 's' || ch == 'S'){ 
-            start_time = time(NULL);
             break;}
 
         blink = (blink+1)%4;
@@ -134,6 +133,92 @@ void start_screen(const char *client_name) {
     endwin();
 }
 
+void guide_screen() {
+    initscr();            // ncurses 시작
+    noecho();             // 입력 문자 표시 안 함
+    curs_set(0);          // 커서 숨김
+    start_color();        // 색상 사용 활성화
+    
+    // 색상 설정
+    init_pair(1, COLOR_GREEN, COLOR_BLACK);
+    init_pair(2, COLOR_RED, COLOR_BLACK);
+    init_pair(4, COLOR_YELLOW, COLOR_BLACK);
+
+    clear();
+    draw_border(3);
+    // 제목 표시
+    attron(A_BOLD);
+    mvprintw(2, 3, "🎮 GAME GUIDE");
+    attroff(A_BOLD);
+
+    // 공통 조작법
+    mvprintw(4, 3, "🕹️ 공통 조작법");
+    mvprintw(5, 5, "Ctrl + \\ : 게임 일시정지 (PvP 전투 중 불가능)");
+    mvprintw(6, 5, "- 테두리 색상 표시:");
+    
+    // 테두리 색상 설명
+    attron(COLOR_PAIR(1));
+    mvprintw(7, 5, "🟢 초록색 → 해당 기능 사용 가능");
+    attroff(COLOR_PAIR(1));
+
+    attron(COLOR_PAIR(2));
+    mvprintw(8, 5, "🔴 빨간색 → 해당 기능 사용 불가");
+    attroff(COLOR_PAIR(2));
+
+    // 게임 방식 설명
+    mvprintw(10, 5, "⚔️ 게임 방식");
+
+    // PvE와 PvP 모드 설명 (나란히 표시)
+    mvprintw(12, 3, "🏆 PvE 모드");
+    mvprintw(13, 5, "턴제 방식 → 5초마다 턴 진행");
+    mvprintw(14, 5, "방향키로 명령어 선택 후 [Enter] 입력");
+    mvprintw(15, 5, "선택하지 않으면 BIT 충전");
+    mvprintw(16, 5, "몬스터 6마리 처치 시 보스 등장");
+    mvprintw(17, 5, "보스 격파 후 보너스 문제 라운드 출현");
+    mvprintw(18, 5, "몬스터 처치 또는 문제 정답 입력 시 DATA 획득");
+
+    mvprintw(12, 49, "⚡ PvP 모드");
+    mvprintw(13, 51, "실시간 전투 → 입력 즉시 반영");
+    mvprintw(14, 51, "- 기본 조작 키");
+    mvprintw(15, 51,"  - Ctrl + A : 강한 충전 (공격력 x 5 충전, 딜레이 5초)");
+    mvprintw(16, 51,"  - Ctrl + C : 일반 충전 (공격력 x 3 충전, 딜레이 3초)");
+    mvprintw(17, 51,"  - Ctrl + X : 해방 (충전된 공격력을 상대에게 전달)");
+    mvprintw(18, 51,"  - Ctrl + Z : 방어 (3초간 방어력 x 3 적용, 공격받으면 피해 감소)");
+    mvprintw(19, 51,"  - Ctrl + S : 카운터 (0.5초 이내 성공 시 반격, 실패 시 상대 공격력만큼 피해)");
+
+    mvprintw(20, 51, "PVP에선 Ctrl + \(일시정지) 사용 불가");
+    
+
+    // 상점 이용 설명
+    mvprintw(23, 3, "🛒 상점 이용");
+    mvprintw(24, 5, "상점은 PvP 전투 중에는 진입 불가");
+    mvprintw(25, 5, "특정 시기에만 상점 이용 가능");
+    mvprintw(26, 5, "data를 사용해 공격력 강화, 방어력 강화, 특수 능력 구매 가능");
+
+    // "S를 눌러서 계속..." 반짝이는 효과
+    int i = 0;
+    while (1) {
+        attron(COLOR_PAIR(4));
+        if (i % 2 == 0) {
+            mvprintw(28, 5, "S를 누르면 시작");
+        } else {
+            mvprintw(28, 5, "                   ");
+        }
+        attroff(COLOR_PAIR(4));
+        refresh();
+        napms(500);  // 0.5초 간격으로 반짝이게 하기
+        i++;
+
+        // 입력 감지
+        int ch = getch();
+        if (ch == 'S' || ch == 's') {
+            start_time = time(NULL);
+            break;
+        }
+    }
+
+    endwin();
+}
 
 //pause_screen
 void pause_screen(int store_access1) {

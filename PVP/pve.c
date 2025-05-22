@@ -13,10 +13,12 @@
 #include <sys/time.h>
 #include <poll.h>
 
+
 #define DATA_BAR_WIDTH 10
 #define BIT_BAR_WIDTH 10
 #define TERM_HEIGHT 35
 #define TERM_WIDTH 130
+
 
 typedef struct {
     int x, y;

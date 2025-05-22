@@ -28,9 +28,10 @@ int main() {
 
     const char *client_name = "Player001";
     start_screen(client_name);  // 시작 화면 띄움
-    
+    guide_screen();
+
     call_store();
-    
+    call_store();
     //reset_stat();
     endwin();
     return 0;

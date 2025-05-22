@@ -13,6 +13,7 @@ void reset_stat();
 
 //screen
 void start_screen(const char *client_name); // 시작 화면
+void guide_screen();
 
 void pause_screen(int store_access1);  // 일시 정지 화면
 int pause_choice(int store_access1);
