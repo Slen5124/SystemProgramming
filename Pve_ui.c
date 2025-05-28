@@ -1,9 +1,21 @@
 #include "Pve_game.h"
 
-void draw_data_bar(int y, int x, int data, int width) {
+/*void draw_data_bar(int y, int x, int data, int width) {
     mvprintw(y, x, "DATA : ");
     for (int i = 0; i < width; i++) {
         if (i < data) addstr(FILLED_CHR);
+        else addstr(" ");
+    }
+    printw(" %d/%d", data, width);
+}*/
+
+void draw_data_bar(int y, int x, int data, int width) {
+    mvprintw(y, x, "DATA : ");
+
+    int filled_blocks = (int)((double)data / width * 10 + 0.5);  // 반올림
+
+    for (int i = 0; i < 10; i++) {
+        if (i < filled_blocks) addstr(FILLED_CHR);
         else addstr(" ");
     }
     printw(" %d/%d", data, width);
@@ -24,7 +36,7 @@ void print_status(int turn, int remaining_time, int round, Entity player, Entity
 
     const char *actions[] = {
         "공격 (1 BIT)",
-        "강화 공격 (3 BIT)",
+        "강화 공격 (5 BIT)",
         "방어 (0 Bit)",
         "BIT 충전",
         "회피 (1 BIT)"
@@ -41,30 +53,44 @@ void print_status(int turn, int remaining_time, int round, Entity player, Entity
     }
 }
 
-void draw_ui(Entity player, Entity monster, int round) {
+void draw_ui(Entity player, Entity monster, int round,int monster_No) {
     MonsterInfo current_monster;
 
     if(round % 7 == 0){
         current_monster = monsters[3];
     } else {
-        current_monster = monsters[(round - 1) % 3];
+
+        current_monster = monsters[monster_No];//몬스터 랜덤하게 등장 시키기 ........
     }
     
     // 몬스터 UI출력
-    for (int i = 0; i < 5; i++) {
-        mvprintw(6 + i, 90, "%s", current_monster.art[i]);
+    for (int i = 0; i < 9; i++) {
+        mvprintw(1 + i, 90, "%s", current_monster.art[i]);
     }
-    mvprintw(10, 90, "👾 %s", current_monster.name);
-    draw_data_bar(12, 90, monster.data, DATA_BAR_WIDTH);
-    draw_bit_bar(13, 90, monster.bit, BIT_BAR_WIDTH);
-    mvprintw(16, 90, "공격력 : %d      방어력 : %d", monster.attack, monster.defense);
+    mvprintw(11, 90, "👾 %s", current_monster.name);
+    if(round % 7 ==0){
+        draw_data_bar(13, 90, monster.data, boss_DATA_BAR_WIDTH);
+    }else{
+        draw_data_bar(13, 90, monster.data, monster_DATA_BAR_WIDTH);
+    }
+    draw_bit_bar(14, 90, monster.bit, BIT_BAR_WIDTH);
+    mvprintw(17, 90, "공격력 : %d      방어력 : %d", monster.attack, monster.defense);
     
     // 플레이어 UI출력
-    mvprintw(17, 5, "  (\\_/) ");
-    mvprintw(18, 5, " ( •_•)");
-    mvprintw(19, 5, "/ >🔥> ");
+
+    mvprintw(11, 5, "⠀⠀⠀⠀⠀⠀⠀⢀⣀⡤⢴⡀⠀⠀⠀⠀⠀⠀");
+    mvprintw(12, 5, "⠀⠀⠀⠀⠀⠀⢠⣟⢼⢝⢷⠾⡦⡀⠀⠀⠀⠀");
+    mvprintw(13, 5, "⠀⠀⢀⣰⡜⡫⡗⡎⠇⢉⣉⢯⠋⡇⠀⠀⠀⠀");
+    mvprintw(14, 5, "⠀⢰⢯⣪⡻⣌⢺⣕⡀⣈⣉⡈⣁⢷⢯⡻⡦⠀");
+    mvprintw(15, 5, "⠀⠈⠷⢷⡁⣿⡢⡪⡱⢶⠶⡮⡑⣝⢧⡻⠉⠀");
+    mvprintw(16, 5, "⠀⢀⡾⡝⣞⠿⣞⡭⢪⠱⣏⠈⠵⠷⠉⠀⠀⠀");
+    mvprintw(17, 5, "⠀⠈⠷⠿⢺⣌⡶⢙⡷⣕⢮⣇⡀⠀⠀⠀⠀⠀");
+    mvprintw(18, 5, "⠀⠀⠀⠀⠀⠀⠀⠿⠾⠾⠳⠷⠿⠀⠀⠀⠀⠀");
+    //mvprintw(17, 5, "  (\\_/) ");
+    //mvprintw(18, 5, " ( •_•)");
+    //mvprintw(19, 5, "/ >🔥> ");
     mvprintw(21, 5, "🧑 플레이어");
-    draw_data_bar(23, 5, player.data, DATA_BAR_WIDTH);
+    draw_data_bar(23, 5, player.data, Player_DATA_BAR_WIDTH);
     draw_bit_bar(24, 5, player.bit, BIT_BAR_WIDTH);
     mvprintw(27, 5, "공격력 : %d      방어력 : %d", player.attack, player.defense);
 }

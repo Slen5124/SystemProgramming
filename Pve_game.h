@@ -13,11 +13,18 @@
 #include <sys/time.h>
 #include <poll.h>
 
-#define DATA_BAR_WIDTH 10
+//#define Player_DATA_BAR_WIDTH 200
+//#define monster_DATA_BAR_WIDTH 50
+//#define boss_DATA_BAR_WIDTH 200
 #define BIT_BAR_WIDTH 10
 #define TERM_HEIGHT 35
 #define TERM_WIDTH 130
 #define FILLED_CHR "█"
+
+extern int Player_DATA_BAR_WIDTH;
+extern int monster_DATA_BAR_WIDTH;
+extern int boss_DATA_BAR_WIDTH;
+
 
 typedef struct {
     int data;
@@ -29,7 +36,7 @@ typedef struct {
 
 typedef struct {
     char *name;
-    char *art[5];
+    char *art[9];
 } MonsterInfo;
 
 // 전역 변수
@@ -41,11 +48,11 @@ extern MonsterInfo monsters[];
 void draw_data_bar(int y, int x, int data, int width);
 void draw_bit_bar(int y, int x, int bit, int width);
 void print_status(int turn, int remaining_time, int round, Entity player, Entity monster, int selected_action);
-void draw_ui(Entity player, Entity monster, int round);
+void draw_ui(Entity player, Entity monster, int round,int monster_No);
 
 // 게임 로직 함수
-void monster_turn(Entity *monster, Entity *player, char *monster_action_result, int round, int turn, int selected_action);
-int wait_for_input_with_timeout(int *selected_action, int timeout_sec, int turn, int round, Entity player, Entity monster, char *player_action_result, char *monster_action_result);
+void monster_turn(Entity *monster, Entity *player, char *monster_action_result, int round, int turn, int selected_action,int monster_No);
+int wait_for_input_with_timeout(int *selected_action, int timeout_sec, int turn, int round, Entity player, Entity monster, char *player_action_result, char *monster_action_result,int monster_No);
 void bonus_round(int boss_count, Entity *player);
 
 #endif
