@@ -6,6 +6,8 @@
 #include <locale.h>   // setlocale(), 로케일 설정
 #include <wchar.h>
 
+wchar_t spinner[] = {L'█', L'▒', L'░', L'█'};
+
 #define Noise 40
 #define blink_time 5
 
@@ -105,7 +107,7 @@ void start_screen(const char *client_name) {
 
         // 깜빡이는 시작 메세지와 테두리
         if (blink>1) {attron(A_REVERSE);} // 🔥 반전 효과 적용
-        mvprintw(19, (WIDTH - strlen("S를 눌러 시작하세요!")) / 2, "S를 눌러 시작하세요!");
+        mvprintw(19, (WIDTH - strlen("Enter를 눌러 시작하세요!")) / 2, "Enter를 눌러 시작하세요!");
         if (blink>1) {attroff(A_REVERSE);}// 🔥 효과 해제
         
 
@@ -123,7 +125,7 @@ void start_screen(const char *client_name) {
         refresh();
 
         ch = getch();
-        if (ch == 's' || ch == 'S'){ 
+        if (ch == '\n'){ 
             break;}
 
         blink = (blink+1)%4;
@@ -200,7 +202,7 @@ void guide_screen() {
     while (1) {
         attron(COLOR_PAIR(4));
         if (i % 2 == 0) {
-            mvprintw(28, 5, "S를 누르면 시작");
+            mvprintw(28, 5, "Enter를 누르면 시작");
         } else {
             mvprintw(28, 5, "                   ");
         }
@@ -211,7 +213,7 @@ void guide_screen() {
 
         // 입력 감지
         int ch = getch();
-        if (ch == 'S' || ch == 's') {
+        if (ch == '\n') {
             start_time = time(NULL);
             break;
         }
@@ -219,6 +221,44 @@ void guide_screen() {
 
     endwin();
 }
+
+void loading_screen() {
+    initscr();
+    noecho();
+    curs_set(0);
+    start_color();  // 색상 활성화
+   
+    int animation_index = 0; int base_x = 100;
+    while (1) {  // 🔥 무한 반복되다가 ESC 키 입력 시 탈출
+        clear();
+        attron(A_BOLD);
+        mvprintw(HEIGHT / 2 - 3,WIDTH / 2 - 30, "██       ██     ██     ████  ████████  ████  ██    ██  ██████ ");
+        mvprintw(HEIGHT / 2 - 2,WIDTH / 2 - 30, "██   ██  ██    ████     ██      ██      ██   ████  ██  ██     ");
+        mvprintw(HEIGHT / 2 - 1,WIDTH / 2 - 30, "██  ███  ██   ██  ██    ██      ██      ██   ██ ██ ██  ██  ███");
+        mvprintw(HEIGHT / 2 + 0,WIDTH / 2 - 30, "██ ██ ██ ██   ██████    ██      ██      ██   ██  ████  ██   ██");
+        mvprintw(HEIGHT / 2 + 1,WIDTH / 2 - 30, "████   ████  ██    ██  ████     ██     ████  ██   ███  ███████");
+        attroff(A_BOLD);
+    
+
+         mvprintw(HEIGHT / 2 + 5, (WIDTH- strlen("매칭을 위해 대기 중입니다.."))/2+ 10, "매칭을 위해 대기 중입니다..");
+    
+        // ✅ 뒤에 공백 두 칸 간격으로 `██` 표시 (순차 애니메이션)
+        if (animation_index == 0) {
+            mvprintw(HEIGHT / 2 + 1, base_x, "██");
+        } else if (animation_index == 1) {
+            mvprintw(HEIGHT / 2 + 1, base_x + 3, "██");
+        } else {
+            mvprintw(HEIGHT / 2 + 1, base_x + 6, "██");
+        }
+
+        refresh();
+        usleep(500000);  // ✅ 0.5초 딜레이
+        animation_index = (animation_index+1)%3;
+    }
+    endwin();
+}
+
+
 
 //pause_screen
 void pause_screen(int store_access1) {
@@ -243,10 +283,10 @@ void pause_screen(int store_access1) {
         return; // 다시 원래 화면으로 돌아가기
     } 
     else if (choice == 2) {
-        store_menu_ui(); // 상점으로 이동 (store_status가 1일때)    
+        store_menu_ui(100); // 상점으로 이동 (store_status가 1일때)    
     }
     else if (choice == 3) {
-        loser_ending_screen();
+        winner_ending_screen();
     }
     
 }
@@ -291,21 +331,24 @@ int pause_choice(int store_access1) {
      
 }
 
-void winner_ending_screen(){
+void winner_ending_screen() {
     initscr();
     noecho();
     curs_set(0);
     start_color();  // 색상 활성화
-    winning_streak+=1;
-   
-    
-    attron(A_BOLD);
-    mvprintw(HEIGHT / 2 - 3,WIDTH / 2 - 24, "██       ██  ████  ██    ██  ██    ██ ██████  ██████  ");
-    mvprintw(HEIGHT / 2 - 2,WIDTH / 2 - 24, "██   ██  ██   ██   ████  ██  ████  ██ ██      ██   ██ ");
-    mvprintw(HEIGHT / 2 - 1,WIDTH / 2 - 24, "██  ███  ██   ██   ██ ██ ██  ██ ██ ██ ██████  ██████  ");
-    mvprintw(HEIGHT / 2 + 0,WIDTH / 2 - 24, "██ ██ ██ ██   ██   ██  ████  ██  ████ ██      ██   ██ ");
-    mvprintw(HEIGHT / 2 + 1,WIDTH / 2 - 24, "████   ████  ████  ██   ███  ██   ███ ██████  ██    ██");
-    attroff(A_BOLD);
+
+    // 초록색 배경, 흰색 글자 설정
+    init_pair(1, COLOR_WHITE, COLOR_GREEN);
+    bkgd(COLOR_PAIR(1));  // 배경 색 적용
+
+    winning_streak += 1;
+
+    attron(A_BOLD | COLOR_PAIR(1));  // 색상 적용
+    mvprintw(HEIGHT / 2 - 3, WIDTH / 2 - 24, "██       ██  ████  ██    ██  ██    ██ ██████  ██████  ");
+    mvprintw(HEIGHT / 2 - 2, WIDTH / 2 - 24, "██   ██  ██   ██   ████  ██  ████  ██ ██      ██   ██ ");
+    mvprintw(HEIGHT / 2 - 1, WIDTH / 2 - 24, "██  ███  ██   ██   ██ ██ ██  ██ ██ ██ ██████  ██████  ");
+    mvprintw(HEIGHT / 2 + 0, WIDTH / 2 - 24, "██ ██ ██ ██   ██   ██  ████  ██  ████ ██      ██   ██ ");
+    mvprintw(HEIGHT / 2 + 1, WIDTH / 2 - 24, "████   ████  ████  ██   ███  ██   ███ ██████  ██    ██");
     mvprintw(HEIGHT / 2 + 4, WIDTH / 2 - 10, "Preparing NextGame..");
 
     char congratulations[100];
@@ -314,33 +357,33 @@ void winner_ending_screen(){
     } else {
         snprintf(congratulations, sizeof(congratulations), "첫번째 승리 축하드립니다!");
     }
-    mvprintw(HEIGHT / 2 + 5, (WIDTH - strlen(congratulations)) / 2, "%s", congratulations);
-    
-
+    mvprintw(HEIGHT / 2 + 5, (WIDTH - strlen(congratulations)+10) / 2, "%s", congratulations);
+    attroff(A_BOLD);
     refresh();
     sleep(3);
 
     endwin();
     printf("🛑 당신은 승리했습니다.\n");
     _exit(0);
-
-
 }
-
-void loser_ending_screen(){
+void loser_ending_screen() {
     initscr();
     noecho();
     curs_set(0);
     start_color();  // 색상 활성화
 
+    // 빨간색 배경 설정
+    init_pair(1, COLOR_WHITE, COLOR_RED);  // 흰색 글자, 빨간색 배경
+    bkgd(COLOR_PAIR(1));  // 배경 색 적용
+
     attron(A_BOLD);
-    mvprintw(HEIGHT / 2 - 3,WIDTH / 2 - 20, "██        ████████  ███████  ██████   ██████  ");
-    mvprintw(HEIGHT / 2 - 2,WIDTH / 2 - 20, "██        ██    ██  ██       ██       ██   ██ ");
-    mvprintw(HEIGHT / 2 - 1,WIDTH / 2 - 20, "██        ██    ██    ████   ██████   ██████  ");
-    mvprintw(HEIGHT / 2 + 0,WIDTH / 2 - 20, "██        ██    ██       ██  ██       ██   ██ ");
-    mvprintw(HEIGHT / 2 + 1,WIDTH / 2 - 20, "████████  ████████  ███████  ██████   ██    ██");
+    mvprintw(HEIGHT / 2 - 3, WIDTH / 2 - 20, "██        ████████  ███████  ██████   ██████  ");
+    mvprintw(HEIGHT / 2 - 2, WIDTH / 2 - 20, "██        ██    ██  ██       ██       ██   ██ ");
+    mvprintw(HEIGHT / 2 - 1, WIDTH / 2 - 20, "██        ██    ██    ████   ██████   ██████  ");
+    mvprintw(HEIGHT / 2 + 0, WIDTH / 2 - 20, "██        ██    ██       ██  ██       ██   ██ ");
+    mvprintw(HEIGHT / 2 + 1, WIDTH / 2 - 20, "████████  ████████  ███████  ██████   ██    ██");
     attroff(A_BOLD);
-    mvprintw(HEIGHT / 2 + 4,WIDTH / 2 - 10, "DELETE EVERYTHING...");
+    mvprintw(HEIGHT / 2 + 4, WIDTH / 2 - 10, "DELETE EVERYTHING...");
 
     refresh();
     sleep(3);
@@ -348,6 +391,4 @@ void loser_ending_screen(){
     endwin();
     printf("🛑 당신은 패배했습니다.\n");
     _exit(0);
-
-
 }
