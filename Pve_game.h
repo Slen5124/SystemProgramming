@@ -42,6 +42,7 @@ typedef struct {
 // 전역 변수
 extern Entity player;
 extern Entity monster;
+extern Entity boss;
 extern MonsterInfo monsters[];
 
 // UI 관련 함수
@@ -54,5 +55,19 @@ void draw_ui(Entity player, Entity monster, int round,int monster_No);
 void monster_turn(Entity *monster, Entity *player, char *monster_action_result, int round, int turn, int selected_action,int monster_No);
 int wait_for_input_with_timeout(int *selected_action, int timeout_sec, int turn, int round, Entity player, Entity monster, char *player_action_result, char *monster_action_result,int monster_No);
 void bonus_round(int boss_count, Entity *player);
+
+
+
+//###########################################################################
+// 게임 초기화 및 종료 관련
+void initialize_game(void);
+void display_game_end(void);
+
+// 게임 플레이 관련
+void game_loop(void);
+void handle_player_action(int selected_action, char* player_action_result);
+void handle_round_end(int* round, int* turn, int* cure_data, int* boss_count, 
+                     int bonus_rand, int* monster_No);
+void display_victory_screen(int round, int cure_data);
 
 #endif

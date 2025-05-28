@@ -311,16 +311,11 @@ void bonus_round(int boss_count, Entity *player) {
     refresh();
 
     timeout(-1);
-    getnstr(input, 49);//이게 문제인가??
+    getnstr(input, 49);
 
-    // 입력 후 입력모드 원복
     noecho();
     curs_set(0);
-/////////////////////////////////////////////////////////////////////스핑크스 지우기
-    //erase();      // 메모리 상의 가상 화면을 모두 지움
     refresh();    // 지운 내용을 실제 터미널에 반영
-
-/////////////////////////////////////////////////////////////////////스핑크스 지우기
 
     // 결과 출력
     if (strcmp(input, answers[idx]) == 0) {
@@ -345,4 +340,151 @@ void bonus_round(int boss_count, Entity *player) {
     mvprintw(row / 2 + 8, (col - 20) / 2, "계속하려면 엔터를 누르세요...");
     refresh();
     while (getch() != '\n');  // 엔터 입력 대기
+} 
+
+
+
+// 플레이어 행동 처리 함수
+void handle_player_action(int selected_action, char* player_action_result) {
+    switch (selected_action) {
+        case 0: // 일반 공격
+            if (player.bit >= 1) {
+                monster.data -= player.attack;
+                player.bit--;
+                snprintf(player_action_result, 100, "공격!");
+            } else {
+                snprintf(player_action_result, 100, "BIT 부족!");
+                attron(COLOR_PAIR(1));
+                box(stdscr, 0, 0);
+                attroff(COLOR_PAIR(1));
+            }
+            break;
+            
+        case 1: // 강화 공격
+            if (player.bit >= 5) {
+                monster.data -= player.strong_attack;
+                player.bit -= 5;
+                snprintf(player_action_result, 100, "강화 공격!");
+            } else {
+                snprintf(player_action_result, 100, "BIT 부족!");
+                attron(COLOR_PAIR(1));
+                box(stdscr, 0, 0);
+                attroff(COLOR_PAIR(1));
+            }
+            break;
+            
+        case 2: // 방어
+            snprintf(player_action_result, 100, "방어!");
+            break;
+            
+        case 3: // BIT 충전
+            if (player.bit < BIT_BAR_WIDTH) {
+                player.bit++;
+                snprintf(player_action_result, 100, "BIT 충전!");
+            } else {
+                snprintf(player_action_result, 100, "BIT가 꽉 찼습니다!");
+            }
+            break;
+            
+        case 4: // 회피
+            if (player.bit >= 1) {
+                player.bit--;
+                snprintf(player_action_result, 100, "회피!");
+            } else {
+                snprintf(player_action_result, 100, "BIT 부족!");
+                attron(COLOR_PAIR(1));
+                box(stdscr, 0, 0);
+                attroff(COLOR_PAIR(1));
+            }
+            break;
+    }
+}
+
+// 라운드 종료 처리 함수
+void handle_round_end(int* round, int* turn, int* cure_data, int* boss_count, 
+                     int bonus_rand, int* monster_No) {
+    srand(time(NULL));
+    *monster_No = rand() % 3;
+    *cure_data += (Player_DATA_BAR_WIDTH - player.data);
+    
+    if (*round % 7 == 0) { // 보스 라운드
+        bonus_round(*boss_count + bonus_rand, &player);
+        (*boss_count)++;
+        boss.attack += 30;
+        boss.strong_attack = boss.attack * 5;
+        boss.defense += 30;
+        
+        monster.attack += 10;
+        monster.strong_attack = boss.attack * 5;
+        monster.defense += 10;
+    }
+    
+    (*round)++;
+    
+    // 몬스터 상태 초기화
+    if (*round % 7 == 0) { // 보스
+        monster.data = boss_DATA_BAR_WIDTH;
+        monster.attack = boss.attack;
+        monster.strong_attack = boss.strong_attack;
+        monster.defense = boss.defense;
+    } else { // 일반 몬스터
+        monster.data = monster_DATA_BAR_WIDTH;
+        monster.attack = monster.attack;
+        monster.strong_attack = monster.strong_attack;
+        monster.defense = monster.defense;
+    }
+    monster.bit = 5;
+    *turn = 0;
+}
+
+
+// 메인 게임 루프 함수
+void game_loop() {
+    int turn = 0;
+    int round = 1;
+    int selected_action = 0;
+    char player_action_result[100] = "";
+    char monster_action_result[100] = "";
+    int boss_count = 0;
+    int cure_data = 0;
+    
+    srand(time(NULL));
+    int monster_No = rand() % 3;
+    int bonus_rand = rand() % 10;
+    
+    draw_game_time();
+    
+    while (player.data > 0 && monster.data > 0) {
+        print_status(turn, 2, round, player, monster, selected_action);
+        draw_ui(player, monster, round, monster_No);
+        
+        mvprintw(33, 10, "플레이어 액션: %s", player_action_result);
+        mvprintw(34, 10, "몬스터   액션: %s", monster_action_result);
+        
+        refresh();
+        
+        int acted = wait_for_input_with_timeout(&selected_action, 3, turn, round, 
+                                              player, monster, player_action_result, 
+                                              monster_action_result, monster_No);
+        draw_game_time();
+        
+        if (!acted) selected_action = 3;
+        
+        handle_player_action(selected_action, player_action_result);
+        monster_turn(&monster, &player, monster_action_result, 
+                    round, turn, selected_action, monster_No);
+        
+        turn++;
+        
+        if (monster.data <= 0) {
+            handle_round_end(&round, &turn, &cure_data, &boss_count, 
+                           bonus_rand, &monster_No);
+            display_victory_screen(round, cure_data);
+            cure_data = 0;
+        }
+        
+        if (start_time >= 720) {
+            call_store(60);
+        } // 12분 지나면 상점으로 호출.. 병조 코드와 병합 되는 부분분
+    }
 }
