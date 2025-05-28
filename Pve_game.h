@@ -40,7 +40,7 @@ typedef struct {
 } MonsterInfo;
 
 // 전역 변수
-extern Entity player;
+extern Entity player;//$$$$$$$$$$$$$$ 병조 Player 구조체 변수 사용했으니까 참고고해서 변경
 extern Entity monster;
 extern Entity boss;
 extern MonsterInfo monsters[];
@@ -70,4 +70,4 @@ void handle_round_end(int* round, int* turn, int* cure_data, int* boss_count,
                      int bonus_rand, int* monster_No);
 void display_victory_screen(int round, int cure_data);
 
-#endif
+#endif 
