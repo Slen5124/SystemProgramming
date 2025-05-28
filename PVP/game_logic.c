@@ -1,3 +1,7 @@
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "game_logic.h"
 #include "shared_eco.h"
 
@@ -92,16 +96,31 @@ void process_action(PlayerState *actor, PlayerState *opponent, ActionType action
 }
 
 // 게임 종료 체크
-int is_game_over(PlayerState *p1, PlayerState *p2) {
-    return p1->data <= 0 || p2->data <= 0;
+bool is_game_over(PlayerState *p1, PlayerState *p2) {
+    // 여기에 디버그 추가
+    bool over = (p1->data <= 0) || (p2->data <= 0);
+    fprintf(stderr, "[DBG is_game_over] p1.data=%d, p2.data=%d → %s\n",
+            p1->data, p2->data, over ? "TRUE" : "FALSE");
+    return over;
 }
 
 // 승자 판단
+// game_logic.c
+
 int get_winner(PlayerState *p1, PlayerState *p2) {
-    if (p1->data <= 0 && p2->data <= 0) return -1;
-    if (p1->data <= 0) return 1;
-    if (p2->data <= 0) return 0;
-    return -2;
+    if (p1->data <= 0 && p2->data <= 0) {
+        fprintf(stderr, "[DBG get_winner] DRAW\n");
+        return -1;  // draw은 -1로 통일
+    }
+    if (p1->data <= 0) {
+        fprintf(stderr, "[DBG get_winner] P2 wins\n");
+        return 1;
+    }
+    if (p2->data <= 0) {
+        fprintf(stderr, "[DBG get_winner] P1 wins\n");
+        return 0;
+    }
+    return -2;  // not over
 }
 
 // 매 틱 호출
