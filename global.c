@@ -6,7 +6,7 @@ int pause_access = 1;
 int store_access = 1;
 int HEIGHT = 35;
 int WIDTH = 130;
-int winning_streak = 0;
+int winning_streak = 3;
 
 
 
@@ -25,9 +25,9 @@ int pvp_charge_minus = 0;
 float pvp_counter_atk_power_stat = 1.0;
 float pvp_charge_strong = 1.0;
 
-
 int buy_atk_cnt =1;
 int buy_dfs_cnt =1;
 int ability_sort = -1;
+
 bool ability_dup_check[7] = {false};
 
