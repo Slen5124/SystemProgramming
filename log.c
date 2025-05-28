@@ -7,7 +7,7 @@
 #include "store.h"
 #include "Diver_ui.h"
 #include "global.h"
-
+// upgrade는 쓸 내용, 로그파일 네임은 저장할 파일
 void write_log_file(const char *upgrade,const char *logfilename) {
     FILE *fp = fopen(logfilename, "a, ccs=UTF-8");  // UTF-8로 저장
     if (fp) {
@@ -21,7 +21,7 @@ void write_log_file(const char *upgrade,const char *logfilename) {
     }
 }
 
-
+// upgrade는 쓸 내용, 로그파일 네임은 저장할 파일
 void read_log_file(const char *logfilename, int y_offset,int x_offset) {
     FILE *fp = fopen(logfilename, "r");
     if (fp) {
