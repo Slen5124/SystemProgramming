@@ -1,3 +1,5 @@
+#include <stdbool.h> 
+
 #ifndef GAME_LOGIC_H
 #define GAME_LOGIC_H
 
@@ -9,7 +11,7 @@ void process_action(PlayerState *actor, PlayerState *opponent, ActionType action
 void check_and_apply_actions(PlayerState*, PlayerState*);
 
 // 게임 종료 여부 확인 (DATA가 0 이하인 경우)
-int is_game_over(PlayerState *p1, PlayerState *p2);
+bool is_game_over(PlayerState *p1, PlayerState *p2);
 
 // 승자 반환: 0 또는 1, 무승부는 -1
 int get_winner(PlayerState *p1, PlayerState *p2);
