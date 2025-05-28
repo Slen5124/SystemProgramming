@@ -23,12 +23,12 @@ const char *Special_ablity_coefficient[Special_ablity_COUNT+1] = { "  +1", "x 1.
                                                         " -0.5s","x 1.5배", "x 1.2배","구매 완료"};
 
 
-void call_store(){ 
+void call_store(int time_limit){ 
     int choice =1;
     store_access =0;
     rand_ability_no_dup();
     while(choice!=3){
-        choice = store_menu_ui(); // 상점 기능 호출
+        choice = store_menu_ui(time_limit); // 상점 기능 호출
         initscr();
         handle_buy(choice);
     }
@@ -98,30 +98,30 @@ void draw_store_ui(int highlight, int time_left) {
     draw_game_time();
     
     // ✅ 1사분면 (플레이어 정보) 오른쪽 5칸
-    mvprintw(2, WIDTH / 2, "[플레이어 정보]");
-    mvprintw(4, WIDTH / 2, "데이터: %4d", data);
-    mvprintw(5, WIDTH / 2, "공격력: %4d", atk_stat);
-    mvprintw(6, WIDTH / 2, "방어력: %4d", dfs_stat);
-    mvprintw(7, WIDTH / 2, "PVE 시작 비트: %d", pve_start_bit);
-    mvprintw(8, WIDTH / 2, "강력 공격 배율: %d", pve_strong_atk_stat);
+    mvprintw(2, WIDTH / 2 + 30, "[플레이어 정보]");
+    mvprintw(4, WIDTH / 2 + 30, "데이터: %4d", data);
+    mvprintw(5, WIDTH / 2 + 30, "공격력: %4d", atk_stat);
+    mvprintw(6, WIDTH / 2 + 30, "방어력: %4d", dfs_stat);
+    mvprintw(7, WIDTH / 2 + 30, "PVE 시작 비트: %d", pve_start_bit);
+    mvprintw(8, WIDTH / 2 + 30, "강력 공격 배율: %d", pve_strong_atk_stat);
 
     
     // ✅ 2사분면 (상점 상품)
     mvprintw(2, 2, "[상점 상품]");
      
     // 🔥 가로 3칸 구분, 세로 간격 늘리기
-    mvprintw(4, 2,  "------------------------------------------------------------");
-    mvprintw(5, 2,  "|                  |                  |                    |");
-    mvprintw(6, 2,  "| 공격력 +10 강화  | 방어력 +10 강화  |    특수능력 구매   |");
-    mvprintw(7, 2,  "|       +%d강       |      +%d강        |       %s        |",buy_atk_cnt-1,buy_dfs_cnt-1, ability_sort==Special_ablity_COUNT?"     ":ability_sort<PVE_ablity_COUNT?"[PVE]":"[PVP]");
-    mvprintw(8, 2,  "|                  |                  |                    |");
-    mvprintw(9, 2, "|                  |                  |    %s",Special_ablity[ability_sort]); 
-    mvprintw(9, 61,"|");
-    mvprintw(10, 2, "|                  |                  |       %s",Special_ablity_coefficient[ability_sort]);
-    mvprintw(10, 61,"|");
-    mvprintw(11, 2, "|                  |                  |                    |");
-    mvprintw(12, 2, "| 필요 데이터: %3d | 필요 데이터: %3d |   %s %s  |", 10 * buy_atk_cnt, 10 * buy_dfs_cnt,ability_sort==Special_ablity_COUNT?"            ":"필요 데이터:",ability_sort==Special_ablity_COUNT?"  ":"50");
-    mvprintw(13, 2, "------------------------------------------------------------");
+    mvprintw(4, 2,  "------------------------------------------------------------------------------");
+    mvprintw(5, 2,  "|                        |                        |                          |");
+    mvprintw(6, 2,  "|    공격력 +10 강화     |    방어력 +10 강화     |       특수능력 구매      |");
+    mvprintw(7, 2,  "|          +%d강          |         +%d강           |          %s           |",buy_atk_cnt-1,buy_dfs_cnt-1, ability_sort==Special_ablity_COUNT?"     ":ability_sort<PVE_ablity_COUNT?"[PVE]":"[PVP]");
+    mvprintw(8, 2,  "|                        |                        |                          |");
+    mvprintw(9, 2, "|                        |                        |       %s   ",Special_ablity[ability_sort]); 
+    mvprintw(9, 79,"|");
+    mvprintw(10, 2, "|                        |                        |           %s     ",Special_ablity_coefficient[ability_sort]);
+    mvprintw(10, 79,"|");
+    mvprintw(11, 2, "|                        |                        |                          |");
+    mvprintw(12, 2, "|    필요 데이터: %3d    |    필요 데이터: %3d    |      %s %s     |", 10 * buy_atk_cnt, 10 * buy_dfs_cnt,ability_sort==Special_ablity_COUNT?"            ":"필요 데이터:",ability_sort==Special_ablity_COUNT?"  ":"50");
+    mvprintw(13, 2, "------------------------------------------------------------------------------");
 
     // ✅ 3사분면 (로그) 아래로 5칸
     int log_y_offset = HEIGHT / 2;
@@ -131,7 +131,7 @@ void draw_store_ui(int highlight, int time_left) {
 
     // ✅ 4사분면 (선택 메뉴) → 오른쪽 5칸, 아래 5줄
     int select_y_offset = HEIGHT / 2;
-    int select_x_offset = WIDTH / 2 - 5 + 5;
+    int select_x_offset = WIDTH / 2  + 30;
 
     mvprintw(select_y_offset, select_x_offset, "[상점 선택]");
     for (int i = 0; i < options_COUNT; ++i) {
@@ -148,7 +148,7 @@ void draw_store_ui(int highlight, int time_left) {
     doupdate();
 }
 
-int store_menu_ui() {
+int store_menu_ui(int time_limit) {
     setlocale(LC_ALL, "ko_KR.UTF-8");
     initscr();
     noecho();
@@ -158,11 +158,11 @@ int store_menu_ui() {
 
     int highlight = 0;
     time_t start = time(NULL);
-    int time_left = Time_Start;
+    int time_left = time_limit;
 
     while (time_left > 0) {
         time_t now = time(NULL);
-        time_left = Time_Start - (now - start);  
+        time_left = time_limit - (now - start);  
 
         draw_store_ui(highlight, time_left);
 
@@ -175,10 +175,10 @@ int store_menu_ui() {
             endwin();
             return highlight;
         }
-       napms(50);  // ✅ 깜빡임 줄이기, CPU 부하도 낮음
+        napms(50);  // ✅ 깜빡임 줄이기, CPU 부하도 낮음
     }
 
     endwin();
-    return options_COUNT-1;
+    return options_COUNT - 1;
 }
 
