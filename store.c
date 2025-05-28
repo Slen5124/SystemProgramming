@@ -24,37 +24,40 @@ const char *Special_ablity_coefficient[Special_ablity_COUNT+1] = { "  +1", "x 1.
 
 
 void call_store(int time_limit){ 
+    clear();
+    refresh();
     int choice =1;
-    store_access =0;
+    Player.store_access = 0;
+    time_t start = time(NULL);
     rand_ability_no_dup();
     while(choice!=3){
-        choice = store_menu_ui(time_limit); // 상점 기능 호출
+        choice = store_menu_ui(time_limit,start); // 상점 기능 호출
         initscr();
         handle_buy(choice);
     }
-    store_access =1;
+    Player.store_access = 1;
 }
 
 void handle_buy(int choice) {
     if (choice == 0) {
-        if(data>10*buy_atk_cnt){
-           data-=10*buy_atk_cnt++;
-            atk_stat +=10;
-            write_log_file("공격력 강화","upgrade_log.txt");}
+        if(Player.data>10*Player.buy_atk_cnt){
+           Player.data-=10*Player.buy_atk_cnt++;
+            Player.atk_stat +=10;
+            write_log_file("공격력  강화","upgrade_log.txt");}
         else{write_log_file("구매가 불가능합니다","upgrade_log.txt");}
     } 
     else if (choice == 1) {
-        if(data>10*buy_dfs_cnt){
-            data-=10*buy_dfs_cnt++;
-            dfs_stat +=10;
-            write_log_file("방어력 강화","upgrade_log.txt");}
+        if(Player.data>10*Player.buy_dfs_cnt){
+            Player.data-=10*Player.buy_dfs_cnt++;
+            Player.dfs_stat +=10;
+            write_log_file("방어력  강화","upgrade_log.txt");}
         else{write_log_file("구매가 불가능합니다","upgrade_log.txt");}
     }
     else if (choice == 2) {
-        if(data>50&&ability_sort!=Special_ablity_COUNT){
-            data-=50;
-            ability_dup_check[ability_sort] = true;
-            ability_upgrade(ability_sort);
+        if(Player.data>50&&Player.ability_sort!=Special_ablity_COUNT){
+            Player.data-=50;
+            Player.ability_dup_check[Player.ability_sort] = true;
+            ability_upgrade(Player.ability_sort);
             write_log_file("특수능력 구매","upgrade_log.txt");
             rand_ability_no_dup();
             mvprintw(9, 42, "|                    ");
@@ -71,23 +74,23 @@ void handle_buy(int choice) {
 void rand_ability_no_dup(){
     int cnt =0;
     while(1){
-        if(cnt>Special_ablity_COUNT-1){ability_sort = Special_ablity_COUNT; return;}
-        if(!ability_dup_check[cnt++]){break;}//false, 즉 비 구매 상품이 존재할때
+        if(cnt>Special_ablity_COUNT-1){Player.ability_sort = Special_ablity_COUNT; return;}
+        if(!Player.ability_dup_check[cnt++]){break;}//false, 즉 비 구매 상품이 존재할때
     }
 
     do{
-    ability_sort = rand()%Special_ablity_COUNT;
-    }while(ability_dup_check[ability_sort]);
+    Player.ability_sort = rand()%Special_ablity_COUNT;
+    }while(Player.ability_dup_check[Player.ability_sort]);
 }
 
 void ability_upgrade(int ability_sort){
     
-         if(ability_sort == 0){pve_start_bit =4;}
-    else if(ability_sort == 1){pve_data_intake=(pve_data_intake*3)/2;}
-    else if(ability_sort == 2){pve_strong_atk_stat =6;}
-    else if(ability_sort == 3){pvp_charge_minus = 500;}
-    else if(ability_sort == 4){pvp_counter_atk_power_stat = 1.5;}
-    else if(ability_sort == 5){pvp_charge_strong = 1.2;}
+         if(ability_sort == 0){Player.pve_start_bit =4;}
+    else if(ability_sort == 1){Player.pve_data_intake=(Player.pve_data_intake*3)/2;}
+    else if(ability_sort == 2){Player.pve_strong_atk_stat =6;}
+    else if(ability_sort == 3){Player.pvp_charge_minus = 500;}
+    else if(ability_sort == 4){Player.pvp_counter_atk_power_stat = 1.5;}
+    else if(ability_sort == 5){Player.pvp_charge_strong = 1.2;}
 
 }
 
@@ -99,11 +102,11 @@ void draw_store_ui(int highlight, int time_left) {
     
     // ✅ 1사분면 (플레이어 정보) 오른쪽 5칸
     mvprintw(2, WIDTH / 2 + 30, "[플레이어 정보]");
-    mvprintw(4, WIDTH / 2 + 30, "데이터: %4d", data);
-    mvprintw(5, WIDTH / 2 + 30, "공격력: %4d", atk_stat);
-    mvprintw(6, WIDTH / 2 + 30, "방어력: %4d", dfs_stat);
-    mvprintw(7, WIDTH / 2 + 30, "PVE 시작 비트: %d", pve_start_bit);
-    mvprintw(8, WIDTH / 2 + 30, "강력 공격 배율: %d", pve_strong_atk_stat);
+    mvprintw(4, WIDTH / 2 + 30, "데이터: %4d", Player.data);
+    mvprintw(5, WIDTH / 2 + 30, "공격력: %4d", Player.atk_stat);
+    mvprintw(6, WIDTH / 2 + 30, "방어력: %4d", Player.dfs_stat);
+    mvprintw(7, WIDTH / 2 + 30, "PVE 시작 비트: %d", Player.pve_start_bit);
+    mvprintw(8, WIDTH / 2 + 30, "강력 공격 배율: %d", Player.pve_strong_atk_stat);
 
     
     // ✅ 2사분면 (상점 상품)
@@ -113,14 +116,14 @@ void draw_store_ui(int highlight, int time_left) {
     mvprintw(4, 2,  "------------------------------------------------------------------------------");
     mvprintw(5, 2,  "|                        |                        |                          |");
     mvprintw(6, 2,  "|    공격력 +10 강화     |    방어력 +10 강화     |       특수능력 구매      |");
-    mvprintw(7, 2,  "|          +%d강          |         +%d강           |          %s           |",buy_atk_cnt-1,buy_dfs_cnt-1, ability_sort==Special_ablity_COUNT?"     ":ability_sort<PVE_ablity_COUNT?"[PVE]":"[PVP]");
+    mvprintw(7, 2,  "|          +%d강          |         +%d강           |          %s           |",Player.buy_atk_cnt-1,Player.buy_dfs_cnt-1, Player.ability_sort==Special_ablity_COUNT?"     ":Player.ability_sort<PVE_ablity_COUNT?"[PVE]":"[PVP]");
     mvprintw(8, 2,  "|                        |                        |                          |");
-    mvprintw(9, 2, "|                        |                        |       %s   ",Special_ablity[ability_sort]); 
+    mvprintw(9, 2, "|                        |                        |       %s       ",Special_ablity[Player.ability_sort]); 
     mvprintw(9, 79,"|");
-    mvprintw(10, 2, "|                        |                        |           %s     ",Special_ablity_coefficient[ability_sort]);
+    mvprintw(10, 2, "|                        |                        |           %s       ",Special_ablity_coefficient[Player.ability_sort]);
     mvprintw(10, 79,"|");
     mvprintw(11, 2, "|                        |                        |                          |");
-    mvprintw(12, 2, "|    필요 데이터: %3d    |    필요 데이터: %3d    |      %s %s     |", 10 * buy_atk_cnt, 10 * buy_dfs_cnt,ability_sort==Special_ablity_COUNT?"            ":"필요 데이터:",ability_sort==Special_ablity_COUNT?"  ":"50");
+    mvprintw(12, 2, "|    필요 데이터: %3d    |    필요 데이터: %3d    |      %s %s     |", 10 * Player.buy_atk_cnt, 10 * Player.buy_dfs_cnt,Player.ability_sort==Special_ablity_COUNT?"            ":"필요 데이터:",Player.ability_sort==Special_ablity_COUNT?"  ":"50");
     mvprintw(13, 2, "------------------------------------------------------------------------------");
 
     // ✅ 3사분면 (로그) 아래로 5칸
@@ -148,7 +151,7 @@ void draw_store_ui(int highlight, int time_left) {
     doupdate();
 }
 
-int store_menu_ui(int time_limit) {
+int store_menu_ui(int time_limit,time_t start) {
     setlocale(LC_ALL, "ko_KR.UTF-8");
     initscr();
     noecho();
@@ -157,7 +160,6 @@ int store_menu_ui(int time_limit) {
     nodelay(stdscr, TRUE);
 
     int highlight = 0;
-    time_t start = time(NULL);
     int time_left = time_limit;
 
     while (time_left > 0) {
