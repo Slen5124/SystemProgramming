@@ -4,14 +4,8 @@
 #include "store.h"
 #include "log.h"
 
-/*void draw_data_bar(int y, int x, int data, int width) {
-    mvprintw(y, x, "DATA : ");
-    for (int i = 0; i < width; i++) {
-        if (i < data) addstr(FILLED_CHR);
-        else addstr(" ");
-    }
-    printw(" %d/%d", data, width);
-}*/
+extern int ROUND_MON_NO;
+extern PlayerState Player;
 
 void draw_data_bar(int y, int x, int data, int width) {
     mvprintw(y, x, "DATA : ");
@@ -34,7 +28,7 @@ void draw_bit_bar(int y, int x, int bit, int width) {
     printw(" %d/%d", bit, width);
 }
 
-void print_status(int turn, int remaining_time, int round, Entity player, Entity monster, int selected_action) {
+void print_status(int turn, int remaining_time, int round, PlayerState Player, MonsterInfo monster, int selected_action) {
     mvprintw(1, 1, "라운드: %d", round);
     mvprintw(2, 1, "턴: %d | 남은 시간: %d초", turn, remaining_time);
 
@@ -57,13 +51,12 @@ void print_status(int turn, int remaining_time, int round, Entity player, Entity
     }
 }
 
-void draw_ui(Entity player, Entity monster, int round,int monster_No) {
+void draw_ui(PlayerState Player, MonsterInfo monster, int round,int monster_No) {
     MonsterInfo current_monster;
 
     if(round % 7 == 0){
         current_monster = monsters[3];
     } else {
-
         current_monster = monsters[monster_No];//몬스터 랜덤하게 등장 시키기 ........
     }
     
@@ -72,13 +65,11 @@ void draw_ui(Entity player, Entity monster, int round,int monster_No) {
         mvprintw(1 + i, 90, "%s", current_monster.art[i]);
     }
     mvprintw(11, 90, "👾 %s", current_monster.name);
-    if(round % 7 ==0){
-        draw_data_bar(13, 90, monster.data, boss_DATA_BAR_WIDTH);
-    }else{
-        draw_data_bar(13, 90, monster.data, monster_DATA_BAR_WIDTH);
-    }
-    draw_bit_bar(14, 90, monster.bit, BIT_BAR_WIDTH);
-    mvprintw(17, 90, "공격력 : %d      방어력 : %d", monster.attack, monster.defense);
+
+    draw_data_bar(13, 90, current_monster.data, current_monster.max_data);
+    
+    draw_bit_bar(14, 90, current_monster.bit, BIT_BAR_WIDTH);
+    mvprintw(17, 90, "공격력 : %d      방어력 : %d", current_monster.attack, current_monster.defense);
     
     // 플레이어 UI출력
 
@@ -90,15 +81,12 @@ void draw_ui(Entity player, Entity monster, int round,int monster_No) {
     mvprintw(16, 5, "⠀⢀⡾⡝⣞⠿⣞⡭⢪⠱⣏⠈⠵⠷⠉⠀⠀⠀");
     mvprintw(17, 5, "⠀⠈⠷⠿⢺⣌⡶⢙⡷⣕⢮⣇⡀⠀⠀⠀⠀⠀");
     mvprintw(18, 5, "⠀⠀⠀⠀⠀⠀⠀⠿⠾⠾⠳⠷⠿⠀⠀⠀⠀⠀");
-    //mvprintw(17, 5, "  (\\_/) ");
-    //mvprintw(18, 5, " ( •_•)");
-    //mvprintw(19, 5, "/ >🔥> ");
-    mvprintw(21, 5, "🧑 플레이어");
-    draw_data_bar(23, 5, player.data, Player_DATA_BAR_WIDTH);
-    draw_bit_bar(24, 5, player.bit, BIT_BAR_WIDTH);
-    mvprintw(27, 5, "공격력 : %d      방어력 : %d", player.attack, player.defense);
-}
 
+    mvprintw(21, 5, "🧑 플레이어");
+    draw_data_bar(23, 5, Player.data, Player_DATA_BAR_WIDTH);
+    draw_bit_bar(24, 5, Player.pve_start_bit, BIT_BAR_WIDTH);
+    mvprintw(27, 5, "공격력 : %d      방어력 : %d", Player.atk_stat, Player.dfs_stat);
+}
 
 // 게임 초기화 함수
 void initialize_game() {
@@ -130,30 +118,31 @@ void display_victory_screen(int round, int cure_data) {
     mvprintw(TERM_HEIGHT / 2 - 8, (TERM_WIDTH - 30) / 2, 
              "전투 후 부상 data 일부 획득 !!  +%d data", cure_data / 2);
     
-    player.data += (cure_data / 2);
-    if (player.data > Player_DATA_BAR_WIDTH) 
-        Player_DATA_BAR_WIDTH = player.data;
+    Player.data += (cure_data / 2);
+    if (Player.data > Player_DATA_BAR_WIDTH) 
+        Player_DATA_BAR_WIDTH = Player.data;
     
     if (round % 7 == 0) { // 보스 라운드
         mvprintw(TERM_HEIGHT / 2 - 7, (TERM_WIDTH - 30) / 2, 
                  "승리 보상 data 획득 !!         +100 data");
-        mvprintw(TERM_HEIGHT / 2, (TERM_WIDTH - 30) / 2, 
-                 "🔥위험!! ** 보스 출현 **🔥");
-        player.data += 100;
-        if (player.data > Player_DATA_BAR_WIDTH) 
-            Player_DATA_BAR_WIDTH = player.data;
+        mvprintw(TERM_HEIGHT / 2, (TERM_WIDTH - 30) / 2, "새로운 적이 등장했습니다!");
+        Player.data += 100;
+        if (Player.data > Player_DATA_BAR_WIDTH) 
+            Player_DATA_BAR_WIDTH = Player.data;
     } else { // 일반 라운드
         mvprintw(TERM_HEIGHT / 2 - 7, (TERM_WIDTH - 30) / 2, 
                  "승리 보상 data 획득 !!         +30 data");
-        mvprintw(TERM_HEIGHT / 2, (TERM_WIDTH - 30) / 2, 
-                 "새로운 적이 등장했습니다!");
-        player.data += 30;
-        if (player.data > Player_DATA_BAR_WIDTH) 
-            Player_DATA_BAR_WIDTH = player.data;
+        if((round+1) % 7 !=0)
+            mvprintw(TERM_HEIGHT / 2, (TERM_WIDTH - 30) / 2, "새로운 적이 등장했습니다!");
+        else
+            mvprintw(TERM_HEIGHT / 2, (TERM_WIDTH - 30) / 2, "🔥위험!! ** 보스 출현 **🔥");
+        Player.data += 30;
+        if (Player.data > Player_DATA_BAR_WIDTH) 
+            Player_DATA_BAR_WIDTH = Player.data;
     }
     
-    if (player.data < Player_DATA_BAR_WIDTH) 
-        Player_DATA_BAR_WIDTH = player.data;
+    if (Player.data < Player_DATA_BAR_WIDTH) 
+        Player_DATA_BAR_WIDTH = Player.data;
     
     mvprintw(TERM_HEIGHT / 2 + 4, (TERM_WIDTH - 30) / 2, 
              "계속하려면 Enter를 누르세요...");
@@ -173,12 +162,11 @@ void display_game_end() {
     box(stdscr, 0, 0);
     attroff(COLOR_PAIR(2));
     
-    if (player.data <= 0 && monster.data <= 0)
-        mvprintw(TERM_HEIGHT / 2, (TERM_WIDTH - 30) / 2, "무승부!");
-    else if (player.data <= 0)
+    int monster_no;
+
+
+    if (Player.data <= 0)
         mvprintw(TERM_HEIGHT / 2, (TERM_WIDTH - 30) / 2, "Monster wins!");
-    else if (monster.data <= 0)
-        mvprintw(TERM_HEIGHT / 2, (TERM_WIDTH - 30) / 2, "Player wins!");
     
     mvprintw(TERM_HEIGHT / 2 + 2, (TERM_WIDTH - 40) / 2, 
              "Press ENTER to exit the game...");

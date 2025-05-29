@@ -4,66 +4,12 @@
 #include "store.h"
 #include "log.h"
 
-MonsterInfo monsters[] = {
-    {
-        "디도스",
-         {
-            "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
-            "⠀⠀⠀⠀⠀⠀⡀⢄⠠⡐⢄⢀⠠⡠⡰⠢⠀⠀",
-            "⠀⠀⠀⢀⢊⢮⢮⡳⣝⣮⠮⡦⡣⣕⢥⠀⠀⠀",
-            "⠀⠀⡀⡃⢧⢯⣷⣻⡽⠎⠀⣹⣻⡜⣢⠀⠀⠀",
-            "⠀⠀⢳⡀⢈⢳⣗⡯⠣⠀⠀⣺⣺⣽⡪⠀⠀⠀",
-            "⠀⠀⠘⢶⣀⡴⣯⢿⡴⡤⢞⢽⣽⣳⢵⠂⠀⠀",
-            "⠀⠀⠀⠚⠮⡯⡣⡣⡣⣱⣵⡿⣝⣮⠁⠀⠀⠀",
-            "⠀⠀⠀⠀⠀⠙⠹⡳⡻⠽⡚⠊⠁⠁⠀⠀⠀⠀",
-            "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
-        }
-    },
-    {
-        "루트킷",
-        {
-            "⠀⠀⠀⠀⠀⡠⢢⢣⢱⢑⢕⢢⢂⠀⠀⠀⠀⠀",
-            "⠀⠀⠀⠀⡌⡎⢎⢆⢇⢣⢃⢇⢣⠣⠀⠀⠀⠀",
-            "⠂⠀⠐⠀⢕⢢⠀⡀⡕⢕⡁⢀⢐⠭⠀⠀⠀⠂",
-            "⠀⠀⠀⠀⡕⡕⢕⢱⢑⢕⢜⢜⢜⢜⠀⠀⢀⠀",
-            "⠀⠂⠁⡐⡕⡜⡜⢜⢜⢸⢨⢢⢣⠪⣂⠀⠀⠀",
-            "⠄⠀⡔⡜⡌⡆⡇⢇⢣⢱⢑⢅⢇⢣⠣⡅⠄⠀",
-            "⠀⠀⠊⠊⠈⠀⠈⢊⢎⢎⠪⠀⠀⠈⠘⠘⠀⠀",
-            "⠠⠀⠀⠀⠀⠀⠀⠀⠱⠑⠁⠀⠀⠂⠀⠀⠀⡀",
-            ""
-        }
-    },
-    {
-        "쥐피티",
-        {
-            "⠀⠀⠀⠀⢀⣴⠾⠟⠻⠷⣦⣀⣀⣀⠀⠀⠀⠀",
-            "⠀⠀⣀⣠⣿⠁⠀⣀⣤⡾⠟⠋⠉⠙⠻⣦⡀⠀",
-            "⢀⣾⠛⢹⡇⠀⣾⠋⠁⣀⡤⠶⣦⣄⡀⠸⣷⠀",
-            "⣾⡇⠀⢸⡇⠀⣿⡴⠛⠛⢦⣄⡀⠙⠻⢷⣟⠀",
-            "⢹⣇⠀⠘⠷⣄⣿⠀⠀⠀⠀⣿⠙⢲⡄⠀⢹⣇",
-            "⠀⣽⢷⣦⣄⠈⠙⠳⣤⣤⠞⣷⠀⢸⡇⠀⢸⡿",
-            "⠀⢿⡆⠈⠙⠻⠶⠚⠉⢀⣠⡿⠀⣸⣇⣤⡿⠁",
-            "⠀⠈⠻⣦⣄⣀⣠⣴⡾⠛⠉⠀⢀⣾⠋⠁⠀⠀",
-            "⠀⠀⠀⠀⠉⠉⠉⠻⢶⣦⣴⡶⠟⠁⠀⠀⠀⠀"
-        }
-    },
-    {
-        "닐론 머크스",
-        {
-            "⠀⠀⠀⢐⢵⡺⠪⠩⠋⠟⠚⠪⢓⡽⢖⠀⠀⠀",
-            "⠀⠀⠀⢉⢗⠜⠈⢀⠀⠀⠀⢐⠨⡸⡊⠄⠀⠀",
-            "⠀⠀⠀⡠⠱⠡⠂⠀⠀⠀⠀⠐⠔⡈⠢⠁⠀⠀",
-            "⠀⠀⠀⢨⠠⣏⠪⠳⡄⠰⠪⢍⠣⡀⠍⠀⠀⠀",
-            "⠀⠀⠀⠈⢢⠀⠁⠁⠄⢀⠁⠀⠂⢤⠃⠀⠀⠀",
-            "⠀⠀⠀⠀⠸⡹⠀⠀⠾⡔⠂⢀⠱⢀⠀⠀⠀⠀",
-            "⠀⠀⠀⡠⣸⣺⣀⢓⣚⣒⡒⠢⠨⣺⡥⣀⠀⠀",
-            "⣦⣿⣽⣿⣽⣷⢵⣢⠢⡂⣢⣵⣱⣿⢎⢼⣿⡦",
-            "⣿⣿⣿⣷⣿⣿⣿⣾⠢⢅⢫⣿⣿⣿⣧⢕⣿⣿"
-        }
-    }
-};
+extern int ROUND_MON_NO;
+extern MonsterInfo monsters[];
+extern MonsterInfo current_monster;
+extern PlayerState Player;
 
-void monster_turn(Entity *monster, Entity *player, char *monster_action_result, int round, int turn, int selected_action, int monster_No) {
+void monster_turn(MonsterInfo *monster, PlayerState *Player, char *monster_action_result, int round, int turn, int selected_action, int monster_No) {
     // 몬스터별 행동 패턴 정의
     // 0: 공격, 1: 강화 공격, 2: 방어, 3: 충전, 4: 회피
     int pattern_didos[] = {3,0,3,2};      // 디도스      충전-공격-충전-방어
@@ -77,21 +23,8 @@ void monster_turn(Entity *monster, Entity *player, char *monster_action_result, 
     if(round % 7 == 0){
         pattern = pattern_boss;
         pattern_length = sizeof(pattern_boss) / sizeof(int);
-    } else {/*
-        switch ((round - 1) % 3) {
-        case 0:
-            pattern = pattern_junion;
-            pattern_length = sizeof(pattern_junion) / sizeof(int);
-            break;
-        case 1:
-            pattern = pattern_death;
-            pattern_length = sizeof(pattern_death) / sizeof(int);
-            break;
-        case 2:
-            pattern = pattern_ai;
-            pattern_length = sizeof(pattern_ai) / sizeof(int);
-            break;
-        }*/
+        monster_No=3;
+    } else {
         switch(monster_No){
         case 0:
             pattern = pattern_didos;
@@ -114,40 +47,50 @@ void monster_turn(Entity *monster, Entity *player, char *monster_action_result, 
     // 행동 실행
     switch (action_index) {
         case 0: // 공격
-            if (monster->bit >= 1) {
+            if (monsters[monster_No].bit >= 1) {
                 if (selected_action == 2) { // 플레이어 방어일때
-                    player->data -= (monster->attack - player->defense);
+                    if(Player->dfs_stat < monsters[monster_No].attack)
+                        Player->data -= (monsters[monster_No].attack - Player->dfs_stat);
                 } else if(selected_action != 4) { // 플레이어 회피아닐때
-                    player->data -= monster->attack;
+                    Player->data -= monsters[monster_No].attack;
                 }
-                monster->bit--;
+                monsters[monster_No].bit--;
                 snprintf(monster_action_result, 100, "공격!");
             } else {
                 snprintf(monster_action_result, 100, "BIT 부족!");
             }
             break;
         case 1: // 강화 공격
-            if (monster->bit >= 5) {
+            if (monsters[monster_No].bit >= 5) {
                 if (selected_action == 2) { // 플레이어 방어일때
-                    player->data -= (monster->strong_attack - player->defense);
+                    if(Player->dfs_stat < monsters[monster_No].strong_attack)
+                        Player->data -= (monsters[monster_No].strong_attack - Player->dfs_stat);
                 } else if(selected_action != 4) { // 플레이어 회피아닐때
-                    player->data -= monster->strong_attack;
+                    Player->data -= monsters[monster_No].strong_attack;
                 }
-                monster->bit -= 5;
+                monsters[monster_No].bit -= 5;
                 snprintf(monster_action_result, 100, "강화 공격!");
             } else {
                 snprintf(monster_action_result, 100, "BIT 부족!");
             }
             break;
         case 2: // 방어
-            if(selected_action == 0 || selected_action == 1){
-                monster->data += monster->defense;
+            if(selected_action == 0 ){
+                if(monsters[monster_No].defense < Player -> atk_stat)
+                    monsters[monster_No].data += monsters[monster_No].defense;
+                else
+                    monsters[monster_No].data+=Player->atk_stat;
+            }else if(selected_action == 1){
+                if(monsters[monster_No].defense < (Player -> atk_stat * Player->pve_strong_atk_stat))
+                    monsters[monster_No].data += monsters[monster_No].defense;
+                else
+                    monsters[monster_No].data+=Player -> atk_stat * Player->pve_strong_atk_stat;
             }
             snprintf(monster_action_result, 100, "방어!");
             break;
         case 3: // BIT 충전
-            if (monster->bit < BIT_BAR_WIDTH) {
-                monster->bit++;
+            if (monsters[monster_No].bit < BIT_BAR_WIDTH) {
+                monsters[monster_No].bit++;
                 snprintf(monster_action_result, 100, "BIT 충전!");
             } else {
                 snprintf(monster_action_result, 100, "BIT가 꽉 찼습니다!");
@@ -155,11 +98,11 @@ void monster_turn(Entity *monster, Entity *player, char *monster_action_result, 
             break;
         case 4: // 회피
             if(selected_action == 0){ 
-                monster->data += player->attack;
+                monsters[monster_No].data += Player->atk_stat;
             } else if(selected_action == 1){
-                monster->data += player->strong_attack;
+                monsters[monster_No].data += Player -> atk_stat * Player->pve_strong_atk_stat;
             }
-            monster->bit--;
+            monsters[monster_No].bit--;
             snprintf(monster_action_result, 100, "회피!");
             break;
         default:
@@ -167,7 +110,7 @@ void monster_turn(Entity *monster, Entity *player, char *monster_action_result, 
     }
 }
 
-int wait_for_input_with_timeout(int *selected_action, int timeout_sec, int turn, int round, Entity player, Entity monster, char *player_action_result, char *monster_action_result,int monster_No) {
+int wait_for_input_with_timeout(int *selected_action, int timeout_sec, int turn, int round, PlayerState Player, MonsterInfo monster, char *player_action_result, char *monster_action_result,int monster_No) {
     time_t start_time = time(NULL);
     int ch;
     int action_confirmed = 0;
@@ -214,9 +157,9 @@ int wait_for_input_with_timeout(int *selected_action, int timeout_sec, int turn,
         box(stdscr, 0, 0);
         attroff(COLOR_PAIR(2));
         
-        print_status(turn, remaining, round, player, monster, *selected_action);
-        draw_ui(player, monster, round,monster_No);
-        draw_game_time();//########################################
+        print_status(turn, remaining, round, Player, monster, *selected_action);
+        draw_ui(Player, monster, round,monster_No);
+        draw_game_time();
 
         mvprintw(30, 10, "플레이어 액션: %s", player_action_result);
         mvprintw(31, 10, "몬스터   액션: %s", monster_action_result);
@@ -224,7 +167,7 @@ int wait_for_input_with_timeout(int *selected_action, int timeout_sec, int turn,
     }
 }
 
-void bonus_round(int boss_count, Entity *player) {
+void bonus_round(int boss_count, PlayerState *Player) {
     clear();
 
     // 입력모드 초기화
@@ -320,37 +263,32 @@ void bonus_round(int boss_count, Entity *player) {
     // 결과 출력
     if (strcmp(input, answers[idx]) == 0) {
         mvprintw(row / 2 + 6, (col - 20) / 2, "정답입니다! DATA + 50");
-        player->data += 50;
-        if (player->data > Player_DATA_BAR_WIDTH) Player_DATA_BAR_WIDTH=player->data;
+        Player->data += 50;
+        if (Player->data > Player_DATA_BAR_WIDTH) Player_DATA_BAR_WIDTH=Player->data;
     } 
     else if(strcmp(input, "I'm mhan") == 0){
         mvprintw(row / 2 +5, (col - 20) / 2,"💕💕💕💕💕💕I love mhan💕💕💕💕💕💕");       
         mvprintw(row / 2 + 6, (col - 20) / 2, "무조건!!! 정답입니다! DATA + 1000");
-        player->data += 1000;
-        if (player->data > Player_DATA_BAR_WIDTH) Player_DATA_BAR_WIDTH=player->data;
+        Player->data += 1000;
+        if (Player->data > Player_DATA_BAR_WIDTH) Player_DATA_BAR_WIDTH=Player->data;
     }
     else {
         mvprintw(row / 2 + 6, (col - 20) / 2, "틀렸습니다...");
     }
 
-    /*refresh();
-    napms(10000);*/
-
-     // 엔터 누르면 종료
     mvprintw(row / 2 + 8, (col - 20) / 2, "계속하려면 엔터를 누르세요...");
     refresh();
     while (getch() != '\n');  // 엔터 입력 대기
 } 
 
 
-
 // 플레이어 행동 처리 함수
-void handle_player_action(int selected_action, char* player_action_result) {
+void handle_player_action(int selected_action, char* player_action_result,int monster_No) {
     switch (selected_action) {
         case 0: // 일반 공격
-            if (player.bit >= 1) {
-                monster.data -= player.attack;
-                player.bit--;
+            if (Player.pve_start_bit >= 1) {
+                monsters[monster_No].data -= Player.atk_stat;
+                Player.pve_start_bit --;
                 snprintf(player_action_result, 100, "공격!");
             } else {
                 snprintf(player_action_result, 100, "BIT 부족!");
@@ -361,9 +299,9 @@ void handle_player_action(int selected_action, char* player_action_result) {
             break;
             
         case 1: // 강화 공격
-            if (player.bit >= 5) {
-                monster.data -= player.strong_attack;
-                player.bit -= 5;
+            if (Player.pve_start_bit >= 5) {
+                monsters[monster_No].data -= Player.atk_stat * Player.pve_strong_atk_stat;
+                Player.pve_start_bit -= 5;
                 snprintf(player_action_result, 100, "강화 공격!");
             } else {
                 snprintf(player_action_result, 100, "BIT 부족!");
@@ -378,8 +316,8 @@ void handle_player_action(int selected_action, char* player_action_result) {
             break;
             
         case 3: // BIT 충전
-            if (player.bit < BIT_BAR_WIDTH) {
-                player.bit++;
+            if (Player.pve_start_bit < BIT_BAR_WIDTH) {
+                Player.pve_start_bit++;
                 snprintf(player_action_result, 100, "BIT 충전!");
             } else {
                 snprintf(player_action_result, 100, "BIT가 꽉 찼습니다!");
@@ -387,8 +325,8 @@ void handle_player_action(int selected_action, char* player_action_result) {
             break;
             
         case 4: // 회피
-            if (player.bit >= 1) {
-                player.bit--;
+            if (Player.pve_start_bit >= 1) {
+                Player.pve_start_bit--;
                 snprintf(player_action_result, 100, "회피!");
             } else {
                 snprintf(player_action_result, 100, "BIT 부족!");
@@ -405,41 +343,35 @@ void handle_round_end(int* round, int* turn, int* cure_data, int* boss_count,
                      int bonus_rand, int* monster_No) {
     srand(time(NULL));
     *monster_No = rand() % 3;
-    *cure_data += (Player_DATA_BAR_WIDTH - player.data);
+    *cure_data += (Player_DATA_BAR_WIDTH - Player.data);
+
+    monsters[*monster_No].data=monsters[*monster_No].max_data;
+    monsters[*monster_No].bit=5;
     
     if (*round % 7 == 0) { // 보스 라운드
-        bonus_round(*boss_count + bonus_rand, &player);
-        (*boss_count)++;
-        boss.attack += 30;
-        boss.strong_attack = boss.attack * 5;
-        boss.defense += 30;
-        
-        monster.attack += 10;
-        monster.strong_attack = boss.attack * 5;
-        monster.defense += 10;
-    }
     
-    (*round)++;
-    
-    // 몬스터 상태 초기화
-    if (*round % 7 == 0) { // 보스
-        monster.data = boss_DATA_BAR_WIDTH;
-        monster.attack = boss.attack;
-        monster.strong_attack = boss.strong_attack;
-        monster.defense = boss.defense;
-    } else { // 일반 몬스터
-        monster.data = monster_DATA_BAR_WIDTH;
-        monster.attack = monster.attack;
-        monster.strong_attack = monster.strong_attack;
-        monster.defense = monster.defense;
+        monsters[3].attack+=10;
+        monsters[3].strong_attack = monsters[3].attack*5;
+        monsters[3].defense+=10;
+        monsters[3].max_data+=30;
+        monsters[3].data=monsters[3].max_data;
+
+        for(int i=0;i<3;i++){
+            monsters[i].attack+=10;
+            monsters[i].strong_attack = monsters[i].attack*5;
+            monsters[i].defense+=10;
+            monsters[i].max_data+=30;
+            monsters[i].data=monsters[i].max_data;
+        }
     }
-    monster.bit = 5;
+
+    ROUND_MON_NO ++;
     *turn = 0;
 }
 
 
 // 메인 게임 루프 함수
-void game_loop() {
+void game_loop(){
     int turn = 0;
     int round = 1;
     int selected_action = 0;
@@ -453,10 +385,12 @@ void game_loop() {
     int bonus_rand = rand() % 10;
     
     draw_game_time();
+    //current_monster = monsters[monster_No];
     
-    while (player.data > 0 && monster.data > 0) {
-        print_status(turn, 2, round, player, monster, selected_action);
-        draw_ui(player, monster, round, monster_No);
+    
+    while (Player.data > 0 && monsters[monster_No].data > 0) {
+        print_status(turn, 2, round, Player, monsters[monster_No], selected_action);
+        draw_ui(Player, monsters[monster_No], round, monster_No);
         
         mvprintw(33, 10, "플레이어 액션: %s", player_action_result);
         mvprintw(34, 10, "몬스터   액션: %s", monster_action_result);
@@ -464,27 +398,38 @@ void game_loop() {
         refresh();
         
         int acted = wait_for_input_with_timeout(&selected_action, 3, turn, round, 
-                                              player, monster, player_action_result, 
+                                              Player, monsters[monster_No], player_action_result, 
                                               monster_action_result, monster_No);
         draw_game_time();
         
         if (!acted) selected_action = 3;
         
-        handle_player_action(selected_action, player_action_result);
-        monster_turn(&monster, &player, monster_action_result, 
+        handle_player_action(selected_action, player_action_result,monster_No);
+        monster_turn(&monsters[monster_No], &Player, monster_action_result, 
                     round, turn, selected_action, monster_No);
         
         turn++;
         
-        if (monster.data <= 0) {
+        if (monsters[monster_No].data <= 0) {
             handle_round_end(&round, &turn, &cure_data, &boss_count, 
                            bonus_rand, &monster_No);
             display_victory_screen(round, cure_data);
+
+            if(round % 7 == 0){
+                bonus_round(boss_count + bonus_rand, &Player);
+                (boss_count)++;
+            }
+            round++;
+
+
+            if(round % 7 == 0){
+                monster_No=3;
+            }
             cure_data = 0;
-        }
         
-        if (start_time >= 720) {
-            call_store(60);
-        } // 12분 지나면 상점으로 호출.. 병조 코드와 병합 되는 부분분
-    }
-} 
+            if (Player.start_time >= 720) {
+                call_store(60);
+            } // 12분 지나면 상점으로 호출.. 병조 코드와 병합 되는 부분분
+        }
+    } 
+}

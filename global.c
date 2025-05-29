@@ -11,10 +11,10 @@ PlayerState Player = {
 
     .id = 0,
     .nick = "",  // 문자열 배열 초기화
-    .data = 500,
+    .data = 200,
     .atk_stat = 20,
     .dfs_stat = 20,
-    .pve_start_bit = 3,
+    .pve_start_bit = 5,
     .pve_data_intake = 50,
     .pve_strong_atk_stat = 5,
 
