@@ -1,33 +1,39 @@
 #include "global.h"
 #include <stdbool.h>
+#include <time.h>
 
-// 게임상태
-int pause_access = 1;
-int store_access = 1;
-int HEIGHT = 35;
-int WIDTH = 130;
-int winning_streak = 3;
+// 전역 플레이어 변수 정의
+PlayerState Player = {
+    .pause_access = 1,
+    .store_access = 0,
+    .winning_streak = 3,
+    .start_time = 0,
 
+    .id = 0,
+    .nick = "",  // 문자열 배열 초기화
+    .data = 200,
+    .atk_stat = 20,
+    .dfs_stat = 20,
+    .pve_start_bit = 5,
+    .pve_data_intake = 50,
+    .pve_strong_atk_stat = 5,
 
+    .pvp_charge_minus = 0,
+    .pvp_counter_atk_power_stat = 1.0,
+    .pvp_charge_strong = 1.0,
 
+    .charged_attack = 0,
+    .defense_shield = 0,
+    .is_in_delay = 0,
+    .delay_until_ms = 0,
+    .is_counter_ready = 0,
+    .counter_window_start_ms = 0,
+    //.current_action = ACTION_NONE,  // 필요하면 추가
+    .block_end_ms = 0,
 
-//플레이어 데이터
-int data = 500;
-int atk_stat =20;
-int dfs_stat = 20;
+    .buy_atk_cnt = 1,
+    .buy_dfs_cnt = 1,
 
-int pve_start_bit =3;  //+1, 1.5qo, 1.2qo
-int pve_data_intake =50;
-int pve_strong_atk_stat = 5 ;
-
-//차지속도, 카운터공격계수, 강한차지 충전량
-int pvp_charge_minus = 0;
-float pvp_counter_atk_power_stat = 1.0;
-float pvp_charge_strong = 1.0;
-
-int buy_atk_cnt =1;
-int buy_dfs_cnt =1;
-int ability_sort = -1;
-
-bool ability_dup_check[7] = {false};
-
+    .ability_sort = -1,
+    .ability_dup_check = {false}
+};

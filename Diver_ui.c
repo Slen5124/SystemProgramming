@@ -15,11 +15,10 @@ wchar_t spinner[] = {L'█', L'▒', L'░', L'█'};
 #include "global.h"
 #include "store.h"
 
-time_t start_time;
 
 void draw_game_time() {
     time_t now = time(NULL);
-    int elapsed = (int)(now - start_time);
+    int elapsed = (int)(now - Player.start_time);
     int minutes = elapsed / 60;
     int seconds = elapsed % 60;
     mvprintw(1, WIDTH - 10, "[%02d:%02d]", minutes, seconds);
@@ -50,14 +49,38 @@ void size_check(){
     }
 }
 
-void reset_stat(){
-    data = 200;
-    atk_stat =20;
-    dfs_stat = 20;
-    pve_start_bit =3;
-    pve_strong_atk_stat = 5.0 ;
-    buy_atk_cnt =1;
-    buy_dfs_cnt =1;
+void reset_stat() {
+    Player.pause_access = 1;
+    Player.store_access = 0;
+    Player.winning_streak = 3;
+    Player.start_time = 0;
+
+    Player.id = 0;
+    strcpy(Player.nick, "");  // 문자열 초기화
+    Player.data = 500;
+    Player.atk_stat = 20;
+    Player.dfs_stat = 20;
+    Player.pve_start_bit = 3;
+    Player.pve_data_intake = 50;
+    Player.pve_strong_atk_stat = 5;
+
+    Player.pvp_charge_minus = 0;
+    Player.pvp_counter_atk_power_stat = 1.0;
+    Player.pvp_charge_strong = 1.0;
+
+    Player.charged_attack = 0;
+    Player.defense_shield = 0;
+    Player.is_in_delay = 0;
+    Player.delay_until_ms = 0;
+    Player.is_counter_ready = 0;
+    Player.counter_window_start_ms = 0;
+    Player.block_end_ms = 0;
+
+    Player.buy_atk_cnt = 1;
+    Player.buy_dfs_cnt = 1;
+
+    Player.ability_sort = -1;
+    memset(Player.ability_dup_check, false, sizeof(Player.ability_dup_check));
 }
 
 
@@ -79,9 +102,6 @@ void start_screen(const char *client_name) {
         // 중앙 제목
         mvprintw(10, ((WIDTH - strlen("DIVER : ONE LIFE ONLINE")) / 2)-2, "DIVER : ONE LIFE ONLINE");
 
-        int start_x = (COLS - WIDTH) / 2;
-        int start_y = (LINES - HEIGHT) / 2;
-        
         attron(A_BOLD);
         mvprintw(9, WIDTH / 2 - 22, "██████    ████   ██    ██   ██████   ███████ ");
         mvprintw(10,WIDTH / 2 - 22, "██   ██    ██    ██    ██   ██       ██    ██");
@@ -98,10 +118,10 @@ void start_screen(const char *client_name) {
 
         // 환영 메시지
         char welcome[100];
-        if (winning_streak >= 1) {
-            snprintf(welcome, sizeof(welcome), "[%d연승] %s, 환영합니다!", winning_streak, client_name);
+        if (Player.winning_streak >= 1) {
+            snprintf(welcome, sizeof(welcome), "[%d연승] %s, 환영합니다!", Player.winning_streak, Player.nick);
         } else {
-            snprintf(welcome, sizeof(welcome), "%s, 환영합니다!", client_name);
+            snprintf(welcome, sizeof(welcome), "%s, 환영합니다!", Player.nick);
         }
         mvprintw(18, (WIDTH - strlen(welcome)) / 2, "%s", welcome);
 
@@ -214,22 +234,22 @@ void guide_screen() {
         // 입력 감지
         int ch = getch();
         if (ch == '\n') {
-            start_time = time(NULL);
+            Player.start_time = time(NULL);
+            Player.store_access =1;
             break;
         }
     }
-
     endwin();
 }
 
-void loading_screen() {
+void loading_screen(int waiting) {
     initscr();
     noecho();
     curs_set(0);
     start_color();  // 색상 활성화
    
     int animation_index = 0; int base_x = 100;
-    while (1) {  // 🔥 무한 반복되다가 ESC 키 입력 시 탈출
+    while (waiting) {  // 🔥 무한 반복되다가 ESC 키 입력 시 탈출
         clear();
         attron(A_BOLD);
         mvprintw(HEIGHT / 2 - 3,WIDTH / 2 - 30, "██       ██     ██     ████  ████████  ████  ██    ██  ██████ ");
@@ -261,7 +281,7 @@ void loading_screen() {
 
 
 //pause_screen
-void pause_screen(int store_access1) {
+void pause_screen() {
     setlocale(LC_ALL, "ko_KR.UTF-8");
     initscr();
     noecho();
@@ -275,7 +295,7 @@ void pause_screen(int store_access1) {
     draw_game_time();
     draw_border(3);
     refresh();
-    int choice = pause_choice(store_access1); // 사용자 선택 받기
+    int choice = pause_choice(); // 사용자 선택 받기
     clear();
     refresh();
 
@@ -283,17 +303,17 @@ void pause_screen(int store_access1) {
         return; // 다시 원래 화면으로 돌아가기
     } 
     else if (choice == 2) {
-        store_menu_ui(100); // 상점으로 이동 (store_status가 1일때)    
+        call_store(100); // 상점으로 이동 (store_status가 1일때)    
     }
     else if (choice == 3) {
         winner_ending_screen();
     }
     
 }
-int pause_choice(int store_access1) {
+int pause_choice() {
     const char *items[] = {
         "1. 다시 돌아가기",
-        (store_access1 == 0) ? "❌ 지금은 상점에 진입할 수 없습니다." : "2. 상점으로 이동",
+        (Player.store_access == 0) ? "❌ 지금은 상점에 진입할 수 없습니다." : "2. 상점으로 이동",
         "3. 프로그램 종료"
     };
     
@@ -323,7 +343,7 @@ int pause_choice(int store_access1) {
         else if (ch == KEY_DOWN) {
             highlight = (highlight == ITEM_COUNT - 1) ? 0 : highlight + 1;} 
         else if (ch == '\n') {
-            if (highlight != 1 || store_access1 == 1) { 
+            if (highlight != 1 || Player.store_access == 1) { 
                 return highlight +1;
             }}
     usleep(100000);
@@ -341,7 +361,7 @@ void winner_ending_screen() {
     init_pair(1, COLOR_WHITE, COLOR_GREEN);
     bkgd(COLOR_PAIR(1));  // 배경 색 적용
 
-    winning_streak += 1;
+    Player.winning_streak += 1;
 
     attron(A_BOLD | COLOR_PAIR(1));  // 색상 적용
     mvprintw(HEIGHT / 2 - 3, WIDTH / 2 - 24, "██       ██  ████  ██    ██  ██    ██ ██████  ██████  ");
@@ -352,8 +372,8 @@ void winner_ending_screen() {
     mvprintw(HEIGHT / 2 + 4, WIDTH / 2 - 10, "Preparing NextGame..");
 
     char congratulations[100];
-    if (winning_streak > 1) {
-        snprintf(congratulations, sizeof(congratulations), "%d번째 승리 축하드립니다!", winning_streak);
+    if (Player.winning_streak > 1) {
+        snprintf(congratulations, sizeof(congratulations), "%d번째 승리 축하드립니다!", Player.winning_streak);
     } else {
         snprintf(congratulations, sizeof(congratulations), "첫번째 승리 축하드립니다!");
     }
@@ -364,6 +384,7 @@ void winner_ending_screen() {
 
     endwin();
     printf("🛑 당신은 승리했습니다.\n");
+    reset_stat();
     _exit(0);
 }
 void loser_ending_screen() {

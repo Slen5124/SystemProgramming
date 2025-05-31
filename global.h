@@ -2,37 +2,56 @@
 #define GLOBAL_H
 
 #include <stdbool.h>
-#include <time.h>  // 🔥 시간 계산을 위해 추가
-// 게임상태
-extern int pause_access;
-extern int store_access;
-extern int HEIGHT;
-extern int WIDTH;
-extern time_t start_time;
-extern int winning_streak;
+#include <time.h>
+//#include "shared_eco.h" // 이미 ActionType이 정의되어 있음
 
+// 게임 화면 크기
+#define HEIGHT 35
+#define WIDTH 130
 
+// 플레이어 상태 구조체 정의
+typedef struct {
+    // 게임 상태
+    int pause_access;
+    int store_access;
+    int winning_streak;
+    time_t start_time;
 
+    // 플레이어 데이터
+    int id;
+    char nick[32];  // 일반 문자열 배열로 수정
+    int data;
+    int atk_stat;
+    int dfs_stat;
+    int pve_start_bit;
+    int pve_data_intake;
+    int pve_strong_atk_stat;
 
+    // PVP 관련 데이터
+    int pvp_charge_minus;
+    float pvp_counter_atk_power_stat;
+    float pvp_charge_strong;
 
-//플레이어 데이터ㄴ
-extern int data;
-extern int atk_stat;
-extern int dfs_stat;
+    int charged_attack;
+    int defense_shield;  // BLOCK 시 부여되는 방어 수치
+    int is_in_delay;
+    long long delay_until_ms;
+    int is_counter_ready;
+    long long counter_window_start_ms;
+    //ActionType current_action; // shared_eco.h에서 가져옴
+    long long block_end_ms;
 
-extern int pve_start_bit;
-extern int pve_data_intake;
-extern int pve_strong_atk_stat;
+    // 상점 관련 데이터
+    int buy_atk_cnt;
+    int buy_dfs_cnt;
 
-extern int pvp_charge_minus;
-extern float pvp_counter_atk_power_stat;
-extern float pvp_charge_strong;
+    // 능력 관련 데이터
+    int ability_sort;
+    bool ability_dup_check[7];
 
-extern int buy_atk_cnt;
-extern int buy_dfs_cnt;
+} PlayerState;
 
-extern int ability_sort;
-extern bool ability_dup_check[7];
+// 전역 플레이어 변수 선언 (실제 정의는 다른 C 파일에서)
+extern PlayerState Player;
 
-
-#endif
+#endif // GLOBAL_H
