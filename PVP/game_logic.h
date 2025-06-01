@@ -1,9 +1,10 @@
 #include <stdbool.h> 
+#include "../global.h"
+
+
 
 #ifndef GAME_LOGIC_H
 #define GAME_LOGIC_H
-
-#include "shared_eco.h"
 
 // 행동 처리 함수: 행동 주체, 대상, 입력된 행동
 void process_action(PlayerState *actor, PlayerState *opponent, ActionType action);

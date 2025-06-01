@@ -96,7 +96,8 @@ void ability_upgrade(int ability_sort){
 
 void draw_store_ui(int highlight, int time_left) {
     setlocale(LC_ALL, "ko_KR.utf-8");
-    if(!cnt)erase();if(cnt<1)cnt++;
+    if(!cnt)erase();
+    if(cnt<1)cnt++;
     draw_border(3);  // erase() 제거로 화면 전체 초기화 방지
     draw_game_time();
     

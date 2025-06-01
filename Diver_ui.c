@@ -246,10 +246,17 @@ void loading_screen(int waiting) {
     initscr();
     noecho();
     curs_set(0);
-    start_color();  // 색상 활성화
-   
-    int animation_index = 0; int base_x = 100;
-    while (waiting) {  // 🔥 무한 반복되다가 ESC 키 입력 시 탈출
+    start_color();
+    init_pair(1, COLOR_CYAN, COLOR_BLACK);
+    init_pair(2, COLOR_YELLOW, COLOR_BLACK);
+    init_pair(3, COLOR_GREEN, COLOR_BLACK);
+
+    int animation_index = 0;
+    int base_x = 100;
+
+    timeout(0); // non-blocking getch()
+
+    while (waiting) {
         clear();
         attron(A_BOLD);
         mvprintw(HEIGHT / 2 - 3,WIDTH / 2 - 30, "██       ██     ██     ████  ████████  ████  ██    ██  ██████ ");
@@ -258,9 +265,11 @@ void loading_screen(int waiting) {
         mvprintw(HEIGHT / 2 + 0,WIDTH / 2 - 30, "██ ██ ██ ██   ██████    ██      ██      ██   ██  ████  ██   ██");
         mvprintw(HEIGHT / 2 + 1,WIDTH / 2 - 30, "████   ████  ██    ██  ████     ██     ████  ██   ███  ███████");
         attroff(A_BOLD);
-    
+        attron(COLOR_PAIR(3));
+        mvprintw(24, base_x - 6, "WAITING FOR PLAYER...");
+        attroff(COLOR_PAIR(3));
 
-         mvprintw(HEIGHT / 2 + 5, (WIDTH- strlen("매칭을 위해 대기 중입니다.."))/2+ 10, "매칭을 위해 대기 중입니다..");
+        mvprintw(HEIGHT / 2 + 5, (WIDTH- strlen("매칭을 위해 대기 중입니다.."))/2+ 10, "매칭을 위해 대기 중입니다..");
     
         // ✅ 뒤에 공백 두 칸 간격으로 `██` 표시 (순차 애니메이션)
         if (animation_index == 0) {
@@ -277,7 +286,6 @@ void loading_screen(int waiting) {
     }
     endwin();
 }
-
 
 
 //pause_screen

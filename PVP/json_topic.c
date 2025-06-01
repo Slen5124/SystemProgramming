@@ -2,6 +2,11 @@
 #include "json_topic.h"
 #include <string.h>
 #include <stdio.h>
+#include "../global.h"
+
+#ifndef BUFFER_SIZE
+#define BUFFER_SIZE 1024
+#endif
 
 // 문자열 내 "action": 키를 찾아 해당 ActionType 반환
 ActionType parse_action_from_json(const char *json_str) {
@@ -39,12 +44,12 @@ void parse_nickname_from_json(const char *json_str, char *output_buf, int bufsiz
 
 // 서버 → 클라이언트: 상태 응답 JSON 문자열 생성
 void make_status_response(char *buffer, PlayerState *self, PlayerState *opponent, const char *event_msg) {
-    sprintf(buffer,
-        "{\"self\":{\"data\":%d,\"charged_attack\":%d},"
-        "\"opponent\":{\"data\":%d,\"charged_attack\":%d,\"nickname\":\"%s\"},"
+    snprintf(buffer, BUFFER_SIZE,
+        "{\"self\":{\"data\":%d,\"max_data\":%d,\"charged_attack\":%d,\"nickname\":\"%s\"},"
+        "\"opponent\":{\"data\":%d,\"max_data\":%d,\"charged_attack\":%d,\"nickname\":\"%s\"},"
         "\"event\":\"%s\"}",
-        self->data, self->charged_attack,
-        opponent->data, opponent->charged_attack, opponent->nickname,
+        self->data, self->max_data, self->charged_attack, self->nick,
+        opponent->data, opponent->max_data, opponent->charged_attack, opponent->nick,
         event_msg
-    );    
+    );
 }

@@ -1,7 +1,8 @@
 #ifndef JSON_UTIL_H
 #define JSON_UTIL_H
 
-#include "shared_eco.h"
+#include "../global.h"
+
 
 // 클라이언트 → 서버
 ActionType parse_action_from_json(const char *json_str);
