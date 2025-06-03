@@ -31,6 +31,7 @@ typedef struct {
     int id;
     char nick[32];  // 일반 문자열 배열로 수정
     int data;
+    int bit;//수정-원준
     int max_data;
     int atk_stat;
     int dfs_stat;

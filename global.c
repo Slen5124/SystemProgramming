@@ -30,6 +30,7 @@ PlayerState Player = {
     .id = 0,
     .nick = "",  // 문자열 배열 초기화
     .data = 200,
+    .bit = 5,//5로 수정 -원준
     .atk_stat = 20,
     .dfs_stat = 20,
     .pve_start_bit = 5,

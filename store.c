@@ -22,6 +22,7 @@ const char *Special_ablity[Special_ablity_COUNT+1] = {"시작  Bit", "Data 수�
 const char *Special_ablity_coefficient[Special_ablity_COUNT+1] = { "  +1", "x 1.5배", "x 1.2배",
                                                         " -0.5s","x 1.5배", "x 1.2배","구매 완료"};
 
+extern int Player_DATA_BAR_WIDTH;
 
 void call_store(int time_limit){ 
     clear();
@@ -41,6 +42,7 @@ void call_store(int time_limit){
 void handle_buy(int choice) {
     if (choice == 0) {
         if(Player.data>10*Player.buy_atk_cnt){
+            Player_DATA_BAR_WIDTH-=10*Player.buy_atk_cnt++;
            Player.data-=10*Player.buy_atk_cnt++;
             Player.atk_stat +=10;
             write_log_file("공격력  강화","upgrade_log.txt");}
@@ -48,6 +50,7 @@ void handle_buy(int choice) {
     } 
     else if (choice == 1) {
         if(Player.data>10*Player.buy_dfs_cnt){
+            Player_DATA_BAR_WIDTH-=10*Player.buy_dfs_cnt++;
             Player.data-=10*Player.buy_dfs_cnt++;
             Player.dfs_stat +=10;
             write_log_file("방어력  강화","upgrade_log.txt");}
@@ -55,6 +58,7 @@ void handle_buy(int choice) {
     }
     else if (choice == 2) {
         if(Player.data>50&&Player.ability_sort!=Special_ablity_COUNT){
+            Player_DATA_BAR_WIDTH-=50;
             Player.data-=50;
             Player.ability_dup_check[Player.ability_sort] = true;
             ability_upgrade(Player.ability_sort);
@@ -85,7 +89,7 @@ void rand_ability_no_dup(){
 
 void ability_upgrade(int ability_sort){
     
-         if(ability_sort == 0){Player.pve_start_bit =4;}
+         if(ability_sort == 0){Player.pve_start_bit +=1;}
     else if(ability_sort == 1){Player.pve_data_intake=(Player.pve_data_intake*3)/2;}
     else if(ability_sort == 2){Player.pve_strong_atk_stat =6;}
     else if(ability_sort == 3){Player.pvp_charge_minus = 500;}

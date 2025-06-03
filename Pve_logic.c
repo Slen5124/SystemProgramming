@@ -286,9 +286,9 @@ void bonus_round(int boss_count, PlayerState *Player) {
 void handle_player_action(int selected_action, char* player_action_result,int monster_No) {
     switch (selected_action) {
         case 0: // 일반 공격
-            if (Player.pve_start_bit >= 1) {
+            if (Player.bit >= 1) {
                 monsters[monster_No].data -= Player.atk_stat;
-                Player.pve_start_bit --;
+                Player.bit --;
                 snprintf(player_action_result, 100, "공격!");
             } else {
                 snprintf(player_action_result, 100, "BIT 부족!");
@@ -299,9 +299,9 @@ void handle_player_action(int selected_action, char* player_action_result,int mo
             break;
             
         case 1: // 강화 공격
-            if (Player.pve_start_bit >= 5) {
+            if (Player.bit >= 5) {
                 monsters[monster_No].data -= Player.atk_stat * Player.pve_strong_atk_stat;
-                Player.pve_start_bit -= 5;
+                Player.bit -= 5;
                 snprintf(player_action_result, 100, "강화 공격!");
             } else {
                 snprintf(player_action_result, 100, "BIT 부족!");
@@ -316,8 +316,8 @@ void handle_player_action(int selected_action, char* player_action_result,int mo
             break;
             
         case 3: // BIT 충전
-            if (Player.pve_start_bit < BIT_BAR_WIDTH) {
-                Player.pve_start_bit++;
+            if (Player.bit < BIT_BAR_WIDTH) {
+                Player.bit++;
                 snprintf(player_action_result, 100, "BIT 충전!");
             } else {
                 snprintf(player_action_result, 100, "BIT가 꽉 찼습니다!");
@@ -325,8 +325,8 @@ void handle_player_action(int selected_action, char* player_action_result,int mo
             break;
             
         case 4: // 회피
-            if (Player.pve_start_bit >= 1) {
-                Player.pve_start_bit--;
+            if (Player.bit >= 1) {
+                Player.bit--;
                 snprintf(player_action_result, 100, "회피!");
             } else {
                 snprintf(player_action_result, 100, "BIT 부족!");
@@ -344,6 +344,7 @@ void handle_round_end(int* round, int* turn, int* cure_data, int* boss_count,
     srand(time(NULL));
     *monster_No = rand() % 3;
     *cure_data += (Player_DATA_BAR_WIDTH - Player.data);
+    Player.bit=Player.pve_start_bit;
 
     monsters[*monster_No].data=monsters[*monster_No].max_data;
     monsters[*monster_No].bit=5;
