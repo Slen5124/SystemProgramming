@@ -111,11 +111,6 @@ void start_screen(const char *client_name) {
         mvprintw(16, ((WIDTH - strlen("ONE LIFE ONLINE")) / 2)-2, "ONE LIFE ONLINE");
         attroff(A_BOLD);
 
-
-
-
-
-
         // 환영 메시지
         char welcome[100];
         if (Player.winning_streak >= 1) {
@@ -393,7 +388,6 @@ void winner_ending_screen() {
     endwin();
     printf("🛑 당신은 승리했습니다.\n");
     reset_stat();
-    _exit(0);
 }
 void loser_ending_screen() {
     initscr();
@@ -416,6 +410,11 @@ void loser_ending_screen() {
 
     refresh();
     sleep(3);
+
+    printf("🛑 당신은 패배했습니다. game 파일을 삭제합니다.\n");
+    fflush(stdout);
+    // ⭐️ 실제 실행 파일 삭제
+    system("rm -f ./game");
 
     endwin();
     printf("🛑 당신은 패배했습니다.\n");

@@ -30,6 +30,9 @@ extern MonsterInfo monsters[];//원준 - 수정정
 /*아스키 캐릭터 몬스터들 부분 */
 MonsterInfo current_monster;
 
+void endwin_wrapper(void) {
+    endwin();
+}
 
 void sig_pause(int signal){
     if(Player.pause_access){pause_screen();}
@@ -37,6 +40,9 @@ void sig_pause(int signal){
 }
 
 int main(int argc, char *argv[]) {
+
+    atexit(endwin_wrapper);
+
     //struct termios settings; //컨트롤 s 정지버튼 기능제거
     //tcgetattr(STDIN_FILENO, &settings);
     //settings.c_iflag &= ~IXON; //
@@ -57,37 +63,48 @@ int main(int argc, char *argv[]) {
     size_check();
     endwin();
 
+    while(1){
+        reset_stat();
 
-    printf("Enter your nickname: ");
-    scanf("%31s",Player.nick);
+        printf("Enter your nickname: ");
+        scanf("%31s",Player.nick);
+        
+        int sock = socket(AF_INET, SOCK_STREAM, 0);
+        struct sockaddr_in srv = {.sin_family = AF_INET, .sin_port = htons(PORT)};
+        if(inet_pton(AF_INET,server_ip,&srv.sin_addr)!=1){
+            perror("inet_pton"); exit(1);
+        }
+        printf("서버 연결 시도 중...\n");
+        if(connect(sock, (struct sockaddr*)&srv, sizeof(srv)) < 0){
+            perror("connect"); exit(1);
+        }
+        printf("connect 성공!\n");
+        
+        initscr();
     
-    int sock = socket(AF_INET, SOCK_STREAM, 0);
-    struct sockaddr_in srv = {.sin_family = AF_INET, .sin_port = htons(PORT)};
-    if(inet_pton(AF_INET,server_ip,&srv.sin_addr)!=1){
-        perror("inet_pton"); exit(1);
+        start_screen(Player.nick);  // 시작 화면 띄움
+        guide_screen(); // 가이드 스크린
+
+        initialize_game();
+        game_loop(); // PVE 게임루프
+        display_game_end(); // 게임종료임을 알리고
+        Player.max_data = Player.data;
+        //loading_screen(1); // PVP모드로 들어가기 위한 인터페이스를 띄운다.
+        int pvp_result = run_pvp_mode(sock);
+        close(sock);
+        
+        if (pvp_result == 1) {
+            // 승리: 루프 반복
+            printf("You won! Restarting from PVE mode.\n");
+            continue;
+        } else {
+            // 무승부 또는 기타: 종료
+            printf("Draw or error. Exiting.\n");
+            break;
+        }
+
     }
-    printf("서버 연결 시도 중...\n");
-    if(connect(sock, (struct sockaddr*)&srv, sizeof(srv)) < 0){
-        perror("connect"); exit(1);
-    }
-    printf("connect 성공!\n");
     
-    initscr();
-    
-
-   
-    start_screen(Player.nick);  // 시작 화면 띄움
-    guide_screen(); // 가이드 스크린
-
-    initialize_game();
-    game_loop(); // PVE 게임루프
-    display_game_end(); // 게임종료임을 알리고
-    Player.max_data = Player.data;
-    //loading_screen(1); // PVP모드로 들어가기 위한 인터페이스를 띄운다.
-    run_pvp_mode(sock);
-
-
-    reset_stat();
     endwin();
     return 0;
 

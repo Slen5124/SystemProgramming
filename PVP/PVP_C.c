@@ -137,53 +137,10 @@ void draw_status(
     draw_dot_art_enemy();
 }
 
-void draw_grand_result(int win) {
-    int y, x;
-    getmaxyx(stdscr, y, x);
-    clear();
-    if      (win > 0)  attron(COLOR_PAIR(5));
-    else if (win == 0) attron(COLOR_PAIR(6));
-    else               attron(COLOR_PAIR(7));
-    for (int i = 0; i < y; i++) mvhline(i, 0, ' ', x);
-    const char *banner[] = {
-        "..######..##....##.########.##.......########..######.",
-        ".##....##.##...##..##.......##.......##.......##....##",
-        ".##.......##..##...##.......##.......##.......##......",
-        ".##.......#####....######...##.......######...##......",
-        ".##.......##..##...##.......##.......##.......##......",
-        ".##....##.##...##..##.......##.......##.......##....##",
-        "..######..##....##.########.########.########..######."
-    };
-    int lines  = sizeof(banner)/sizeof(banner[0]);
-    int starty = (y - lines)/2 - 2;
-    attron(A_BOLD);
-    for(int i=0;i<lines;i++){
-        mvprintw(starty+i, (x-strlen(banner[i]))/2, "%s", banner[i]);
-    }
-    attroff(A_BOLD);
-    const char *msg = win>0
-        ? "🎉 VICTORY! Press 'q' to quit 🎉"
-        : win==0
-        ? "🤝 IT'S A DRAW! Press 'q' to quit 🤝"
-        : "💀 DEFEATED! Press 'q' to quit 💀";
-    attron(A_UNDERLINE|A_BOLD);
-    mvprintw(starty+lines+2, (x-strlen(msg))/2, "%s", msg);
-    attroff(A_UNDERLINE|A_BOLD);
-
-    refresh();
-    nodelay(stdscr, FALSE);
-    while(getch()!='q');
-    endwin();
-    reset_shell_mode();
-    system("clear");
-    exit(0);
-}
-
 int run_pvp_mode(int sock) {
     def_shell_mode();
     setlocale(LC_ALL,"");
 
-    // REGISTER(내 능력치 포함, nick, atk_stat, dfs_stat)
     char buf[BUF_SIZE];
     long long ts = get_current_time_ms();
     snprintf(buf, BUF_SIZE,
@@ -191,7 +148,6 @@ int run_pvp_mode(int sock) {
         Player.nick, Player.data, Player.max_data, Player.atk_stat, Player.dfs_stat, ts);
     send(sock, buf, strlen(buf), 0);
 
-    // 상대방 접속 대기 (웨이팅/로딩 애니메이션)
     initscr(); def_prog_mode();
     raw(); noecho(); keypad(stdscr, TRUE);
     nodelay(stdscr, TRUE); timeout(0); curs_set(0);
@@ -206,12 +162,13 @@ int run_pvp_mode(int sock) {
     add_log("Game Started");
     parse_nickname_from_json(buf, opponent_name, sizeof(opponent_name));
 
-
     int my_data = Player.data, my_max_data = Player.max_data, my_charge = 0;
     int en_data = Player.data, en_max_data = Player.max_data, en_charge = 0;
 
     long long delay_until = 0;
     int in_delay = 0;
+
+    int result = 0;
 
     // 본게임 루프
     while(1){
@@ -227,14 +184,21 @@ int run_pvp_mode(int sock) {
             snprintf(buf,BUF_SIZE,
                 "{\"action\":\"BLOCK\",\"nickname\":\"%s\",\"timestamp\":%lld}",
                 Player.nick, ts); sent=1;
-        } else if (ch==3){ ts=now; in_delay=1; delay_until=ts+DELAY_CHARGE_WEAK;
+        } else if (ch==3){ ts=now; in_delay=1;
+            // 아이템 효과 적용 (최소 100ms 보장)
+            long delay = DELAY_CHARGE_WEAK - Player.pvp_charge_minus;
+            if(delay < 100) delay = 100;
+            delay_until=ts+delay;
             snprintf(buf,BUF_SIZE,
-                "{\"action\":\"CHARGE_WEAK\",\"nickname\":\"%s\",\"timestamp\":%lld}",
-                Player.nick, ts); sent=1;
-        } else if (ch==1){ ts=now; in_delay=1; delay_until=ts+DELAY_CHARGE_STRONG;
+        "{\"action\":\"CHARGE_WEAK\",\"nickname\":\"%s\",\"timestamp\":%lld}",
+        Player.nick, ts); sent=1;
+        } else if (ch==1){ ts=now; in_delay=1;
+            long delay = DELAY_CHARGE_STRONG - Player.pvp_charge_minus;
+            if(delay < 100) delay = 100;
+            delay_until=ts+delay;
             snprintf(buf,BUF_SIZE,
-                "{\"action\":\"CHARGE_STRONG\",\"nickname\":\"%s\",\"timestamp\":%lld}",
-                Player.nick, ts); sent=1;
+        "{\"action\":\"CHARGE_STRONG\",\"nickname\":\"%s\",\"timestamp\":%lld}",
+        Player.nick, ts); sent=1;
         } else if (ch==19){ ts=now; in_delay=1; delay_until=ts+COUNTER_WINDOW;
             snprintf(buf,BUF_SIZE,
                 "{\"action\":\"COUNTER\",\"nickname\":\"%s\",\"timestamp\":%lld}",
@@ -249,10 +213,8 @@ int run_pvp_mode(int sock) {
             char *s0 = strstr(buf, "\"self\":");
             char *s1 = strstr(buf, "\"opponent\":");
             if (s0) sscanf(s0, "\"self\":{\"data\":%d,\"max_data\":%d,\"charged_attack\":%d,\"nickname\":\"%*31[^\"]\"}", &my_data, &my_max_data, &my_charge);
-            //              ^ nickname 파싱은 무시 (덮어쓰기 방지)
             if (s1) sscanf(s1, "\"opponent\":{\"data\":%d,\"max_data\":%d,\"charged_attack\":%d,\"nickname\":\"%31[^\"]\"}", &en_data, &en_max_data, &en_charge, opponent_name);
 
-            // 이벤트 파싱 및 로그
             char *p = buf;
             while (1) {
                 char *ev = strstr(p, "\"event\":\"");
@@ -264,16 +226,28 @@ int run_pvp_mode(int sock) {
                 add_log(ev);
 
                 if (strstr(ev, "Game Over")) {
-                    int result = strstr(ev, "You Win")   ? 1
-                                : strstr(ev, "You Lose") ? -1
-                                                        : 0;
-                    draw_grand_result(result);
+                    result = strstr(ev, "You Win")   ? 1
+                           : strstr(ev, "You Lose") ? -1
+                                                     : 0;
+                    endwin();
+
+                    if (result == 1) {
+                        winner_ending_screen();  // Diver_ui.c
+                        // winner_ending_screen이 _exit(0); 하므로 이후 코드 실행되지 않음
+                    } else if (result == -1) {
+                        loser_ending_screen();   // Diver_ui.c
+                        // loser_ending_screen이 _exit(0); 하므로 이후 코드 실행되지 않음
+                    } else {
+                        // 무승부 등 기타: 메시지 출력
+                        printf("Draw. No ending screen.\n");
+                        _exit(0);
+                    }
+                    goto done;
                 }
                 p = e1 + 1;
             }
         }
 
-        // 화면 갱신
         erase();
         if(in_delay) attron(COLOR_PAIR(1)); else attron(COLOR_PAIR(2));
         box(stdscr,0,0);
@@ -287,10 +261,9 @@ int run_pvp_mode(int sock) {
         refresh();
         usleep(10000);
     }
-
-    // 종료 복귀
+done:
     endwin();
     reset_shell_mode();
     system("clear");
-    return 0;
+    return result;
 }

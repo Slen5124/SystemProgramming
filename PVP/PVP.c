@@ -79,85 +79,89 @@ int main() {
     }
     printf("🔌 Listening on port %d (all interfaces)\n", PORT);
 
-    // 2) 클라이언트 2명 접속 & REGISTER 수신
-    addrlen = sizeof(cli);
-    for (int i = 0; i < MAX_CLIENTS; i++) {
-        printf("accept 대기중...\n"); fflush(stdout);
-        client_fd[i] = accept(server_fd, (struct sockaddr*)&cli, (socklen_t*)&addrlen);
-        printf("accept 완료: %d\n", client_fd[i]); fflush(stdout);
-        if (client_fd[i] < 0) { perror("accept"); exit(1); }
-        set_nonblocking(client_fd[i]);
-        // REGISTER JSON 받기 (blocking)
-        printf("REGISTER 대기중...\n"); fflush(stdout);
-        while ((bytes = recv(client_fd[i], buffer, BUFFER_SIZE-1, 0)) <= 0);
-        buffer[bytes] = '\0';
-        printf("REGISTER 수신: %s\n", buffer); fflush(stdout);
-
-        int data, max_data, atk, dfs;
-        parse_register_json(buffer, P[i].nick, sizeof(P[i].nick), &data, &max_data, &atk, &dfs);
-
-        P[i].id              = i;
-        P[i].data            = data;
-        P[i].max_data        = max_data;  // ⭐️ max_data 저장
-        P[i].atk_stat        = atk;
-        P[i].dfs_stat        = dfs;
-        P[i].current_action  = ACTION_NONE;
-        P[i].is_in_delay     = 0;
-        P[i].defense_shield  = 0;
-        P[i].is_counter_ready= 0;
-
-        snprintf(buffer, BUFFER_SIZE, "{\"event\":\"Registered as %s\"}", P[i].nick);
-        send(client_fd[i], buffer, strlen(buffer), 0);
-        printf("✅ Player %d: %s connected (DATA=%d, ATK=%d, DFS=%d, MAX=%d)\n", i, P[i].nick, data, atk, dfs, max_data);
-    }
-    printf("🎮 Both connected. Game Started\n");
-
-    // 3) 게임 시작 한 번 상태 전송
-    for (int i = 0; i < MAX_CLIENTS; i++) {
-        make_status_response(buffer, &P[i], &P[1-i], "Game Started");
-        send(client_fd[i], buffer, strlen(buffer), 0);
-    }
-
-    // 4) 메인 루프
-    while (!is_game_over(&P[0], &P[1])) {
-        // (1) 입력 처리
+    while(1){
+        // 2) 클라이언트 2명 접속 & REGISTER 수신 // 무한루프로 게임이 끝나도 서버가 닫히지 않게게
+        addrlen = sizeof(cli);
         for (int i = 0; i < MAX_CLIENTS; i++) {
-            int n = recv(client_fd[i], buffer, BUFFER_SIZE-1, MSG_DONTWAIT);
-            if (n > 0) {
-                buffer[n] = '\0';
-                ActionType act = parse_action_from_json(buffer);
-                long long ts  = parse_timestamp_from_json(buffer);
-                process_action(&P[i], &P[1-i], act);
-                printf("📩 Received %s from %s at %lld\n",
-                       event_str(act) ? event_str(act) : "None",
-                       P[i].nick, ts);
-            }
+            printf("accept 대기중...\n"); fflush(stdout);
+            client_fd[i] = accept(server_fd, (struct sockaddr*)&cli, (socklen_t*)&addrlen);
+            printf("accept 완료: %d\n", client_fd[i]); fflush(stdout);
+            if (client_fd[i] < 0) { perror("accept"); exit(1); }
+            set_nonblocking(client_fd[i]);
+            // REGISTER JSON 받기 (blocking)
+            printf("REGISTER 대기중...\n"); fflush(stdout);
+            while ((bytes = recv(client_fd[i], buffer, BUFFER_SIZE-1, 0)) <= 0);
+            buffer[bytes] = '\0';
+            printf("REGISTER 수신: %s\n", buffer); fflush(stdout);
+
+            int data, max_data, atk, dfs;
+            parse_register_json(buffer, P[i].nick, sizeof(P[i].nick), &data, &max_data, &atk, &dfs);
+
+            P[i].id              = i;
+            P[i].data            = data;
+            P[i].max_data        = max_data;  // ⭐️ max_data 저장
+            P[i].atk_stat        = atk;
+            P[i].dfs_stat        = dfs;
+            P[i].current_action  = ACTION_NONE;
+            P[i].is_in_delay     = 0;
+            P[i].defense_shield  = 0;
+            P[i].is_counter_ready= 0;
+
+            snprintf(buffer, BUFFER_SIZE, "{\"event\":\"Registered as %s\"}", P[i].nick);
+            send(client_fd[i], buffer, strlen(buffer), 0);
+            printf("✅ Player %d: %s connected (DATA=%d, ATK=%d, DFS=%d, MAX=%d)\n", i, P[i].nick, data, atk, dfs, max_data);
         }
+    
+    
+        printf("🎮 Both connected. Game Started\n");
 
-        // (2) 딜레이 완료된 액션 적용
-        check_and_apply_actions(&P[0], &P[1]);
-
-        // (3) 상태 & 이벤트 전송
+        // 3) 게임 시작 한 번 상태 전송
         for (int i = 0; i < MAX_CLIENTS; i++) {
-            const char *ev = event_str(P[i].current_action);
-            if (!ev) ev = "Action processed";
-            make_status_response(buffer, &P[i], &P[1-i], ev);
+            make_status_response(buffer, &P[i], &P[1-i], "Game Started");
             send(client_fd[i], buffer, strlen(buffer), 0);
         }
 
-        usleep(10000);
-    }
+        // 4) 메인 루프
+        while (!is_game_over(&P[0], &P[1])) {
+            // (1) 입력 처리
+            for (int i = 0; i < MAX_CLIENTS; i++) {
+                int n = recv(client_fd[i], buffer, BUFFER_SIZE-1, MSG_DONTWAIT);
+                if (n > 0) {
+                    buffer[n] = '\0';
+                    ActionType act = parse_action_from_json(buffer);
+                    long long ts  = parse_timestamp_from_json(buffer);
+                    process_action(&P[i], &P[1-i], act);
+                    printf("📩 Received %s from %s at %lld\n",
+                        event_str(act) ? event_str(act) : "None",
+                        P[i].nick, ts);
+                }
+            }
 
-    // 5) 게임 종료: 승패 전송
-    int w = get_winner(&P[0], &P[1]);
-    for (int i = 0; i < MAX_CLIENTS; i++) {
-        if (w == -1)       strcpy(buffer, "{\"event\":\"Game Over: Draw!\"}");
-        else if (i == w)   strcpy(buffer, "{\"event\":\"Game Over: You Win!\"}");
-        else               strcpy(buffer, "{\"event\":\"Game Over: You Lose!\"}");
-        send(client_fd[i], buffer, strlen(buffer), 0);
-        close(client_fd[i]);
+            // (2) 딜레이 완료된 액션 적용
+            check_and_apply_actions(&P[0], &P[1]);
+
+            // (3) 상태 & 이벤트 전송
+            for (int i = 0; i < MAX_CLIENTS; i++) {
+                const char *ev = event_str(P[i].current_action);
+                if (!ev) ev = "Action processed";
+                make_status_response(buffer, &P[i], &P[1-i], ev);
+                send(client_fd[i], buffer, strlen(buffer), 0);
+            }
+
+            usleep(10000);
+        }
+
+        // 5) 게임 종료: 승패 전송
+        int w = get_winner(&P[0], &P[1]);
+        for (int i = 0; i < MAX_CLIENTS; i++) {
+            if (w == -1)       strcpy(buffer, "{\"event\":\"Game Over: Draw!\"}");
+            else if (i == w)   strcpy(buffer, "{\"event\":\"Game Over: You Win!\"}");
+            else               strcpy(buffer, "{\"event\":\"Game Over: You Lose!\"}");
+            send(client_fd[i], buffer, strlen(buffer), 0);
+            close(client_fd[i]);
+        }
+        printf("🎮 Game Over, winner=%d\n", w);
     }
-    printf("🎮 Game Over, winner=%d\n", w);
     close(server_fd);
     return 0;
 }

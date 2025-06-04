@@ -428,7 +428,7 @@ void game_loop(){
             }
             cure_data = 0;
         
-            if (time(NULL) - Player.start_time >= 600) {
+            if (time(NULL) - Player.start_time >= 300) {
                 call_store(60);
                 break;
             } // 12분 지나면 상점으로 호출.. 병조 코드와 병합 되는 부분분

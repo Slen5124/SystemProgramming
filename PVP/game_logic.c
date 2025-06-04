@@ -10,11 +10,11 @@ void apply_action(PlayerState *actor, PlayerState *opponent) {
     long long now = get_current_time_ms();
     switch (actor->current_action) {
         case ACTION_CHARGE_WEAK:
-            actor->charged_attack += actor->atk_stat * 3;
+            actor->charged_attack += actor->atk_stat * 3 + actor->pvp_charge_minus / 10;
             break;
 
         case ACTION_CHARGE_STRONG:
-            actor->charged_attack += actor->atk_stat * 5;
+            actor->charged_attack += (actor->atk_stat * 5 + actor->pvp_charge_minus / 10) * actor->pvp_charge_strong;
             break;
 
         case ACTION_ATTACK: {
@@ -31,6 +31,8 @@ void apply_action(PlayerState *actor, PlayerState *opponent) {
             else if (opponent->is_counter_ready &&
                      now - opponent->counter_window_start_ms <= COUNTER_WINDOW) {
                 // 반사
+                int reflect = (int)(dmg * opponent->pvp_counter_atk_power_stat);
+                actor->data -= reflect;
                 opponent->data -= dmg;
                 opponent->is_counter_ready = 0;
                 opponent->current_action   = ACTION_NONE;

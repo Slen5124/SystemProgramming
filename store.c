@@ -121,7 +121,7 @@ void draw_store_ui(int highlight, int time_left) {
     mvprintw(4, 2,  "------------------------------------------------------------------------------");
     mvprintw(5, 2,  "|                        |                        |                          |");
     mvprintw(6, 2,  "|    공격력 +10 강화     |    방어력 +10 강화     |       특수능력 구매      |");
-    mvprintw(7, 2,  "|          +%d강          |         +%d강           |          %s           |",Player.buy_atk_cnt-1,Player.buy_dfs_cnt-1, Player.ability_sort==Special_ablity_COUNT?"     ":Player.ability_sort<PVE_ablity_COUNT?"[PVE]":"[PVP]");
+    mvprintw(7, 2,  "|          +%3d강         |         +%3d강          |          %s           |",Player.buy_atk_cnt-1,Player.buy_dfs_cnt-1, Player.ability_sort==Special_ablity_COUNT?"     ":Player.ability_sort<PVE_ablity_COUNT?"[PVE]":"[PVP]");
     mvprintw(8, 2,  "|                        |                        |                          |");
     mvprintw(9, 2, "|                        |                        |       %s       ",Special_ablity[Player.ability_sort]); 
     mvprintw(9, 79,"|");
