@@ -2,7 +2,6 @@
 #include "Diver_ui.h"
 #include "global.h"
 #include "store.h"
-#include "log.h"
 
 extern int ROUND_MON_NO;
 extern PlayerState Player;
@@ -159,9 +158,6 @@ void draw_ui(PlayerState Player, MonsterInfo monster, int round,int monster_No) 
 void initialize_game() {
     setlocale(LC_ALL, "");
     initscr();
-    start_color();
-    init_pair(1, COLOR_RED, COLOR_BLACK);    // 딜레이 시 (붉은 테두리)
-    init_pair(2, COLOR_GREEN, COLOR_BLACK);  // 딜레이 시 (초록 테두리)
     
     noecho();
     cbreak();

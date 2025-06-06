@@ -9,7 +9,7 @@
 #include "global.h"
 // 병조파트트
 // upgrade는 쓸 내용, 로그파일 네임은 저장할 파일
-void write_log_file(const char *upgrade,const char *logfilename) {
+void write_log_file( char *upgrade, const char *logfilename) {
     FILE *fp = fopen(logfilename, "a, ccs=UTF-8");  // UTF-8로 저장
     if (fp) {
         time_t now = time(NULL);
@@ -17,10 +17,12 @@ void write_log_file(const char *upgrade,const char *logfilename) {
         strncpy(t, ctime(&now), 24);
         t[24] = '\0';
 
-        fprintf(fp, "[%s] %s\n", t, upgrade);
+        // 형식: [시간] <닉네임> 메시지
+        fprintf(fp, "[%s] <%s> %s\n", t, Player.nick, upgrade);
         fclose(fp);
     }
 }
+
 
 // upgrade는 쓸 내용, 로그파일 네임은 저장할 파일
 void read_log_file(const char *logfilename, int y_offset, int x_offset) {
@@ -31,33 +33,39 @@ void read_log_file(const char *logfilename, int y_offset, int x_offset) {
         char *line = NULL;
         size_t len = 0;
 
+       
+        char nicktag[128];
+        snprintf(nicktag, sizeof(nicktag), "<%s>",Player.nick);
+
         while (getline(&line, &len, fp) != -1) {
-            if (count < 5) {
-                lines[count++] = strdup(line);
-            } else {
-                free(lines[0]);
-                for (int i = 1; i < 5; ++i)
-                    lines[i - 1] = lines[i];
-                lines[4] = strdup(line);
+            if (strstr(line, nicktag)) {
+                if (count < 5) {
+                    lines[count++] = strdup(line);
+                } else {
+                    free(lines[0]);
+                    for (int i = 1; i < 5; ++i)
+                        lines[i - 1] = lines[i];
+                    lines[4] = strdup(line);
+                }
             }
         }
         free(line);
         fclose(fp);
 
         if (count == 0) {
-            mvprintw(y_offset + 2, x_offset, "❌ 로그 없음");
+            mvprintw(y_offset + 2, x_offset, "❌ %s님의 로그 없음", Player.nick);
         } else {
-            // 로그를 출력하기 전에 해당 영역을 먼저 공백으로 덮어쓰기
+            // 출력 전 영역 지우기
             for (int i = 0; i < 5; ++i) {
                 int y = y_offset + 2 + i;
                 if (y < HEIGHT - 2) {
-                    mvprintw(y, x_offset, "%-*s", WIDTH - 4, " "); // 공백으로 덮어쓰기
+                    mvprintw(y, x_offset, "%-*s", WIDTH - 4, " ");
                 }
             }
 
-            // 새로운 로그 출력
+            // 로그 출력
             for (int i = 0; i < count; ++i) {
-                char *entry = strchr(lines[i], ']');
+                char *entry = strchr(lines[i], '>');  // <nick> 다음부터 메시지
                 entry = (entry && *(entry + 1)) ? entry + 2 : lines[i];
                 entry[strcspn(entry, "\n")] = '\0';
 
@@ -70,6 +78,6 @@ void read_log_file(const char *logfilename, int y_offset, int x_offset) {
             }
         }
     } else {
-        mvprintw(y_offset + 2, x_offset, "❌ 로그 없음");
+        mvprintw(y_offset + 2, x_offset, "❌ 로그 파일 열기 실패");
     }
 }
