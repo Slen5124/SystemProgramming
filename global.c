@@ -24,7 +24,7 @@ long long get_action_delay(ActionType action) {
 PlayerState Player = {
     .pause_access = 1,
     .store_access = 0,
-    .winning_streak = 3,
+    .winning_streak = 0,
     .start_time = 0,
 
     .id = 0,

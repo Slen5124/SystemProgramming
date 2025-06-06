@@ -54,7 +54,7 @@ void bonus_round(int boss_count, PlayerState *Player);
 
 // 게임 초기화 및 종료 관련
 void initialize_game(void);
-void display_game_end(void);
+
 
 // 게임 플레이 관련
 void game_loop(void);

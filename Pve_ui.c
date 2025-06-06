@@ -168,9 +168,7 @@ void initialize_game() {
     keypad(stdscr, TRUE);
     curs_set(FALSE);
     
-    attron(COLOR_PAIR(2));
-    box(stdscr, 0, 0);
-    attroff(COLOR_PAIR(2));
+    draw_border(1);
     refresh();
 }
 
@@ -178,9 +176,7 @@ void initialize_game() {
 // 승리 화면 표시 함수
 void display_victory_screen(int round, int cure_data) {
     erase();
-    attron(COLOR_PAIR(2));
-    box(stdscr, 0, 0);
-    attroff(COLOR_PAIR(2));
+    draw_border(1);
     
     mvprintw(TERM_HEIGHT / 2 - 8, (TERM_WIDTH - 30) / 2, 
              "전투 후 부상 data 일부 획득 !!  +%d data", cure_data / 2);
@@ -222,23 +218,3 @@ void display_victory_screen(int round, int cure_data) {
     }
 }
 
-// 게임 종료 화면 표시 함수
-void display_game_end() {
-    erase();
-    attron(COLOR_PAIR(2));
-    box(stdscr, 0, 0);
-    attroff(COLOR_PAIR(2));
-    
-    //int monster_no;
-
-
-    if (Player.data <= 0)
-        mvprintw(TERM_HEIGHT / 2, (TERM_WIDTH - 30) / 2, "Monster wins!");
-    
-    mvprintw(TERM_HEIGHT / 2 + 2, (TERM_WIDTH - 40) / 2, 
-             "이제 연습은 끝났어..");
-    mvprintw(TERM_HEIGHT / 2 + 3, (TERM_WIDTH - 40) / 2, 
-             "절망의 끝에선 다다른 폰에게 모든 영광을.");
-    refresh();
-    while (getch() != '\n');
-}

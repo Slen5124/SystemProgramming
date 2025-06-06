@@ -66,9 +66,11 @@ int main(int argc, char *argv[]) {
     while(1){
         reset_stat();
 
-        printf("Enter your nickname: ");
-        scanf("%31s",Player.nick);
-        
+        if(strcmp(Player.nick, "") == 0){
+            printf("Enter your nickname: ");
+            scanf("%31s",Player.nick);
+        }
+
         int sock = socket(AF_INET, SOCK_STREAM, 0);
         struct sockaddr_in srv = {.sin_family = AF_INET, .sin_port = htons(PORT)};
         if(inet_pton(AF_INET,server_ip,&srv.sin_addr)!=1){
@@ -85,9 +87,10 @@ int main(int argc, char *argv[]) {
         start_screen(Player.nick);  // 시작 화면 띄움
         guide_screen(); // 가이드 스크린
 
+        Player.start_time = time(NULL);
+
         initialize_game();
         game_loop(); // PVE 게임루프
-        display_game_end(); // 게임종료임을 알리고
         Player.max_data = Player.data;
         //loading_screen(1); // PVP모드로 들어가기 위한 인터페이스를 띄운다.
         int pvp_result = run_pvp_mode(sock);
