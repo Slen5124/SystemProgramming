@@ -21,7 +21,7 @@ MonsterInfo monsters[] = {
             "⠀⠀⠀⠀⠀⠙⠹⡳⡻⠽⡚⠊⠁⠁⠀⠀⠀⠀",
             "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
         },
-        50, 50, 5, 10, 50, 10  // max_data, data, bit, attack, strong_attack, defense
+        150, 150, 3, 30,150,30  // max_data, data, bit, attack, strong_attack, defense
     },
     {
         "루트킷",
@@ -36,10 +36,10 @@ MonsterInfo monsters[] = {
             "⠠⠀⠀⠀⠀⠀⠀⠀⠱⠑⠁⠀⠀⠂⠀⠀⠀⡀",
             ""
         },
-        50, 50, 5, 12, 60, 8   // max_data, data, bit, attack, strong_attack, defense
+        150, 150, 3, 40, 200, 20   // max_data, data, bit, attack, strong_attack, defense
     },
     {
-        "AI",
+        "쥐피티",
         {
             "⠀⠀⠀⠀⢀⣴⠾⠟⠻⠷⣦⣀⣀⣀⠀⠀⠀⠀",
             "⠀⠀⣀⣠⣿⠁⠀⣀⣤⡾⠟⠋⠉⠙⠻⣦⡀⠀",
@@ -51,10 +51,10 @@ MonsterInfo monsters[] = {
             "⠀⠈⠻⣦⣄⣀⣠⣴⡾⠛⠉⠀⢀⣾⠋⠁⠀⠀",
             "⠀⠀⠀⠀⠉⠉⠉⠻⢶⣦⣴⡶⠟⠁⠀⠀⠀⠀"
         },
-        50, 50, 5, 15, 75, 12  // max_data, data, bit, attack, strong_attack, defense
+        200, 200, 3, 30, 150, 40  // max_data, data, bit, attack, strong_attack, defense
     },
     {
-        "의문의 기업업",
+        "닐론 머크스",
         {
             "⠀⠀⠀⢐⢵⡺⠪⠩⠋⠟⠚⠪⢓⡽⢖⠀⠀⠀",
             "⠀⠀⠀⢉⢗⠜⠈⢀⠀⠀⠀⢐⠨⡸⡊⠄⠀⠀",
@@ -66,7 +66,7 @@ MonsterInfo monsters[] = {
             "⣦⣿⣽⣿⣽⣷⢵⣢⠢⡂⣢⣵⣱⣿⢎⢼⣿⡦",
             "⣿⣿⣿⣷⣿⣿⣿⣾⠢⢅⢫⣿⣿⣿⣧⢕⣿⣿"
         },
-        200, 200, 5, 20, 100, 20  // max_data, data, bit, attack, strong_attack, defense (보스)
+        300, 300, 5, 45, 225, 45  // max_data, data, bit, attack, strong_attack, defense (보스)
     }
 };
 
@@ -98,7 +98,7 @@ void print_status(int turn, int remaining_time, int round, PlayerState Player, M
 
     const char *actions[] = {
         "공격 (1 BIT)",
-        "강화 공격 (5 BIT)",
+        "강화 공격 (4 BIT)",
         "방어 (0 Bit)",
         "BIT 충전",
         "회피 (1 BIT)"
@@ -175,7 +175,7 @@ void display_victory_screen(int round, int cure_data) {
     draw_border(1);
     
     mvprintw(TERM_HEIGHT / 2 - 8, (TERM_WIDTH - 30) / 2, 
-             "전투 후 부상 data 일부 획득 !!  +%d data", cure_data / 2);
+             "전투 후 부상 data 일부 획득 !!  +%d data", (unsigned)cure_data / 2);
     
     Player.data += (cure_data / 2);
     if (Player.data > Player_DATA_BAR_WIDTH) 
