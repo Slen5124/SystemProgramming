@@ -8,16 +8,16 @@
     extern MonsterInfo monsters[];
     extern MonsterInfo current_monster;
     extern PlayerState Player;
-    #define PVE_TIME 10
+    #define PVE_TIME 300
 
 
     void monster_turn(MonsterInfo *monster, PlayerState *Player, char *monster_action_result, int round, int turn, int selected_action, int monster_No) {
         // 몬스터별 행동 패턴 정의
         // 0: 공격, 1: 강화 공격, 2: 방어, 3: 충전, 4: 회피
-        int pattern_didos[] = {3,0,3,2};      // 디도스      충전-공격-충전-방어
-        int pattern_lootkit[]  = {3,0,2};        // 루키트       충전-공격-방어
-        int pattern_gpt[]     = {3,0,3,1};      // 지피티티        충전-공격-충전-강화공격
-        int pattern_boss[]   = {3,1,2,3,4,0,1}; // 보스           충전-강화공격-방어-충전-회피-공격-강화공격
+        int pattern_didos[] = {0,0,3,2,3};      // 디도스      충전-공격-충전-방어
+        int pattern_lootkit[]  = {3,1,3,3,0,3,0,3,3};        // 루키트       충전-공격-방어
+        int pattern_gpt[]     = {3,0,2};      // 지피티티        충전-공격-충전-강화공격
+        int pattern_boss[]   = {3,1,3,3,0,3,0,3,3,2}; // 보스           충전-강화공격-방어-충전-회피-공격-강화공격
 
         int *pattern;
         int pattern_length;
@@ -63,14 +63,14 @@
                 }
                 break;
             case 1: // 강화 공격
-                if (monsters[monster_No].bit >= 5) {
+                if (monsters[monster_No].bit >= 4) {
                     if (selected_action == 2) { // 플레이어 방어일때
                         if(Player->dfs_stat < monsters[monster_No].strong_attack)
                             Player->data -= (monsters[monster_No].strong_attack - Player->dfs_stat);
                     } else if(selected_action != 4) { // 플레이어 회피아닐때
                         Player->data -= monsters[monster_No].strong_attack;
                     }
-                    monsters[monster_No].bit -= 5;
+                    monsters[monster_No].bit -= 4;
                     snprintf(monster_action_result, 100, "강화 공격!");
                 } else {
                     snprintf(monster_action_result, 100, "BIT 부족!");
@@ -297,9 +297,9 @@
                 break;
                 
             case 1: // 강화 공격
-                if (Player.bit >= 5) {
+                if (Player.bit >= 4) {
                     monsters[monster_No].data -= Player.atk_stat * Player.pve_strong_atk_stat;
-                    Player.bit -= 5;
+                    Player.bit -= 4;
                     snprintf(player_action_result, 100, "강화 공격!");
                 } else {
                     snprintf(player_action_result, 100, "BIT 부족!");
@@ -344,17 +344,17 @@
         
         if (*round % 7 == 0) { // 보스 라운드
         
-            monsters[3].attack+=10;
+            monsters[3].attack*=2;
             monsters[3].strong_attack = monsters[3].attack*5;
-            monsters[3].defense+=10;
-            monsters[3].max_data+=30;
+            monsters[3].defense*=2;
+            monsters[3].max_data*=2;
             monsters[3].data=monsters[3].max_data;
 
             for(int i=0;i<3;i++){
-                monsters[i].attack+=10;
+                monsters[i].attack*=2;
                 monsters[i].strong_attack = monsters[i].attack*5;
-                monsters[i].defense+=10;
-                monsters[i].max_data+=30;
+                monsters[i].defense*=2;
+                monsters[i].max_data*=2;
                 monsters[i].data=monsters[i].max_data;
             }
         }
