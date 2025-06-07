@@ -54,7 +54,7 @@ MonsterInfo monsters[] = {
         200, 200, 3, 30, 150, 40  // max_data, data, bit, attack, strong_attack, defense
     },
     {
-        "닐론 머크스",
+        "[BOSS] 닐론 머크스",
         {
             "⠀⠀⠀⢐⢵⡺⠪⠩⠋⠟⠚⠪⢓⡽⢖⠀⠀⠀",
             "⠀⠀⠀⢉⢗⠜⠈⢀⠀⠀⠀⢐⠨⡸⡊⠄⠀⠀",
