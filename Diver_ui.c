@@ -50,14 +50,16 @@ void size_check(){
 }
 
 void reset_stat() {
+     FILE *file = fopen("upgrade_log.txt", "w");
+    if (file != NULL) {
+        fclose(file); // 파일 닫기
+    }
     Player.pause_access = 1;
     Player.store_access = 0;
-    Player.winning_streak = 3;
     Player.start_time = 0;
 
     Player.id = 0;
-    strcpy(Player.nick, "");  // 문자열 초기화
-    Player.data = 500;
+    Player.data = 200;
     Player.atk_stat = 20;
     Player.dfs_stat = 20;
     Player.pve_start_bit = 3;
@@ -229,7 +231,6 @@ void guide_screen() {
         // 입력 감지
         int ch = getch();
         if (ch == '\n') {
-            Player.start_time = time(NULL);
             Player.store_access =1;
             break;
         }
@@ -261,7 +262,6 @@ void loading_screen_frame(int animation_index) {
     refresh();
 }
 
-
 //pause_screen
 void pause_screen() {
     setlocale(LC_ALL, "ko_KR.UTF-8");
@@ -288,7 +288,7 @@ void pause_screen() {
         call_store(100); // 상점으로 이동 (store_status가 1일때)    
     }
     else if (choice == 3) {
-        winner_ending_screen();
+        loser_ending_screen();
     }
     
 }
@@ -336,6 +336,7 @@ int pause_choice() {
 void winner_ending_screen() {
     initscr();
     noecho();
+    clear();
     curs_set(0);
     start_color();  // 색상 활성화
 
@@ -365,11 +366,17 @@ void winner_ending_screen() {
     sleep(3);
 
     endwin();
+    attrset(A_NORMAL);
+    bkgd(COLOR_PAIR(0));
+
+    //printf("\033[0m"); 
     printf("🛑 당신은 승리했습니다.\n");
     reset_stat();
 }
+
 void loser_ending_screen() {
     initscr();
+    clear();
     noecho();
     curs_set(0);
     start_color();  // 색상 활성화
@@ -392,10 +399,16 @@ void loser_ending_screen() {
 
     printf("🛑 당신은 패배했습니다. game 파일을 삭제합니다.\n");
     fflush(stdout);
+    printf("\033[0m"); 
     // ⭐️ 실제 실행 파일 삭제
     system("rm -f ./game");
 
+    
+    attrset(A_NORMAL);
+    bkgd(COLOR_PAIR(0));
+    
     endwin();
-    printf("🛑 당신은 패배했습니다.\n");
-    _exit(0);
+    echo();
+    curs_set(1);
+    exit(0);
 }
