@@ -39,7 +39,7 @@ MonsterInfo monsters[] = {
         50, 50, 5, 12, 60, 8   // max_data, data, bit, attack, strong_attack, defense
     },
     {
-        "쥐피티",
+        "AI",
         {
             "⠀⠀⠀⠀⢀⣴⠾⠟⠻⠷⣦⣀⣀⣀⠀⠀⠀⠀",
             "⠀⠀⣀⣠⣿⠁⠀⣀⣤⡾⠟⠋⠉⠙⠻⣦⡀⠀",
@@ -54,7 +54,7 @@ MonsterInfo monsters[] = {
         50, 50, 5, 15, 75, 12  // max_data, data, bit, attack, strong_attack, defense
     },
     {
-        "닐론 머크스",
+        "의문의 기업업",
         {
             "⠀⠀⠀⢐⢵⡺⠪⠩⠋⠟⠚⠪⢓⡽⢖⠀⠀⠀",
             "⠀⠀⠀⢉⢗⠜⠈⢀⠀⠀⠀⢐⠨⡸⡊⠄⠀⠀",
