@@ -142,11 +142,23 @@ int run_pvp_mode(int sock) {
     setlocale(LC_ALL,"");
 
     char buf[BUF_SIZE];
+    
     long long ts = get_current_time_ms();
     snprintf(buf, BUF_SIZE,
-        "{\"action\":\"REGISTER\",\"nickname\":\"%s\",\"data\":%d,\"max_data\":%d,\"atk\":%d,\"dfs\":%d,\"timestamp\":%lld}",
-        Player.nick, Player.data, Player.max_data, Player.atk_stat, Player.dfs_stat, ts);
+        "{\"action\":\"REGISTER\",\"nickname\":\"%s\","
+        "\"data\":%d,\"max_data\":%d,\"atk\":%d,\"dfs\":%d,"
+        "\"pvp_charge_minus\":%d,"
+        "\"pvp_counter_atk_power_stat\":%.2f,"
+        "\"pvp_charge_strong\":%.2f,"
+        "\"timestamp\":%lld}",
+        Player.nick, Player.data, Player.max_data, Player.atk_stat, Player.dfs_stat,
+        Player.pvp_charge_minus,
+        Player.pvp_counter_atk_power_stat,
+        Player.pvp_charge_strong,
+        ts
+    );
     send(sock, buf, strlen(buf), 0);
+
 
     initscr(); def_prog_mode();
     raw(); noecho(); keypad(stdscr, TRUE);
@@ -169,6 +181,23 @@ int run_pvp_mode(int sock) {
     int in_delay = 0;
 
     int result = 0;
+
+    int animation_index = 0;
+    while (1) {
+        // 1. 로딩 애니메이션 한 프레임 출력
+        loading_screen_frame(animation_index);
+        animation_index = (animation_index+1)%3;
+        usleep(500000); // 0.5초
+
+        // 2. 서버에서 "Game Started" 신호가 왔는지 체크
+        int n = recv(sock, buf, BUF_SIZE-1, MSG_DONTWAIT);
+        if (n > 0) {
+            buf[n] = '\0';
+            if (strstr(buf, "Game Started")) break;
+        }
+        // 입력 무시(getch() 호출하지 않으므로 아무 입력도 안 받아짐)
+    }
+    // endwin(); // 로딩 종료 후 본게임 ncurses 재시작 필요시
 
     // 본게임 루프
     while(1){
