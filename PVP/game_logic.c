@@ -1,8 +1,6 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
-
 
 #include "game_logic.h"
 #include "../global.h"
@@ -15,10 +13,13 @@ void apply_action(PlayerState *actor, PlayerState *opponent) {
             actor->charged_attack += actor->atk_stat * 3 + actor->pvp_charge_minus / 10;
             break;
 
-        case ACTION_CHARGE_STRONG:
-            actor->charged_attack += (actor->atk_stat * 5 + actor->pvp_charge_minus / 10) * actor->pvp_charge_strong;
+        case ACTION_CHARGE_STRONG: {
+            int base = actor->atk_stat * 5 + actor->pvp_charge_minus / 10;
+            int total = (int)(base * actor->pvp_charge_strong);
+            printf("[DEBUG] 강공격 base=%d, coef=%.2f, total=%d\n", base, actor->pvp_charge_strong, total);
+            actor->charged_attack += total;
             break;
-
+            }
         case ACTION_ATTACK: {
             int dmg = actor->charged_attack;
             actor->charged_attack = 0;
