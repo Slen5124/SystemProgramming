@@ -34,12 +34,18 @@ const char* event_str(ActionType a) {
 }
 
 // JSON에서 nick, atk, dfs, max_data 파싱
-void parse_register_json(const char* json, char* nick, int nicklen, int* data, int* max_data, int* atk, int* dfs) {
+void parse_register_json(
+    const char* json, char* nick, int nicklen, int* data, int* max_data, int* atk, int* dfs,
+    int* pvp_charge_minus, float* pvp_counter_atk_power_stat, float* pvp_charge_strong
+) {
     if (nick) strcpy(nick, "");
     if (data) *data = DEFAULT_DATA;
     if (max_data) *max_data = DEFAULT_DATA;
     if (atk)  *atk  = DEFAULT_ATK;
     if (dfs)  *dfs  = DEFAULT_DEF;
+    if (pvp_charge_minus) *pvp_charge_minus = 0;
+    if (pvp_counter_atk_power_stat) *pvp_counter_atk_power_stat = 1.0f;
+    if (pvp_charge_strong) *pvp_charge_strong = 1.0f;
 
     parse_nickname_from_json(json, nick, nicklen);
 
@@ -55,7 +61,17 @@ void parse_register_json(const char* json, char* nick, int nicklen, int* data, i
     if (dfs && strstr(json, "\"dfs\":")) {
         sscanf(strstr(json, "\"dfs\":"), "\"dfs\":%d", dfs);
     }
+    if (pvp_charge_minus && strstr(json, "\"pvp_charge_minus\":")) {
+        sscanf(strstr(json, "\"pvp_charge_minus\":"), "\"pvp_charge_minus\":%d", pvp_charge_minus);
+    }
+    if (pvp_counter_atk_power_stat && strstr(json, "\"pvp_counter_atk_power_stat\":")) {
+        sscanf(strstr(json, "\"pvp_counter_atk_power_stat\":"), "\"pvp_counter_atk_power_stat\":%f", pvp_counter_atk_power_stat);
+    }
+    if (pvp_charge_strong && strstr(json, "\"pvp_charge_strong\":")) {
+        sscanf(strstr(json, "\"pvp_charge_strong\":"), "\"pvp_charge_strong\":%f", pvp_charge_strong);
+    }
 }
+
 
 int main() {
     int server_fd, client_fd[MAX_CLIENTS], addrlen, bytes;
@@ -94,14 +110,19 @@ int main() {
             buffer[bytes] = '\0';
             printf("REGISTER 수신: %s\n", buffer); fflush(stdout);
 
-            int data, max_data, atk, dfs;
-            parse_register_json(buffer, P[i].nick, sizeof(P[i].nick), &data, &max_data, &atk, &dfs);
+            int data, max_data, atk, dfs, pvp_charge_minus;
+            float pvp_counter_atk_power_stat, pvp_charge_strong;
+            parse_register_json(buffer, P[i].nick, sizeof(P[i].nick), &data, &max_data, &atk, &dfs,
+                &pvp_charge_minus, &pvp_counter_atk_power_stat, &pvp_charge_strong);
 
             P[i].id              = i;
             P[i].data            = data;
-            P[i].max_data        = max_data;  // ⭐️ max_data 저장
+            P[i].max_data        = max_data;
             P[i].atk_stat        = atk;
             P[i].dfs_stat        = dfs;
+            P[i].pvp_charge_minus = pvp_charge_minus;
+            P[i].pvp_counter_atk_power_stat = pvp_counter_atk_power_stat;
+            P[i].pvp_charge_strong = pvp_charge_strong;
             P[i].current_action  = ACTION_NONE;
             P[i].is_in_delay     = 0;
             P[i].defense_shield  = 0;
