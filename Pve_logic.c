@@ -340,22 +340,23 @@
         Player.bit=Player.pve_start_bit;
 
         monsters[*monster_No].data=monsters[*monster_No].max_data;
-        monsters[*monster_No].bit=5;
-        
+        for(int i=0;i<=3;i++){
+            monsters[i].bit=3;
+        }
         if (*round % 7 == 0) { // 보스 라운드
         
             monsters[3].attack=(int)(1.5*monsters[3].attack);
             monsters[3].strong_attack = monsters[3].attack*5;
             monsters[3].defense=(int)(1.5*monsters[3].defense);
             monsters[3].max_data=(int)(1.5*monsters[3].max_data);
-            monsters[3].data=(int)(1.5*monsters[3].data);
+            monsters[3].data=(int)(monsters[3].max_data);
 
             for(int i=0;i<3;i++){
                 monsters[i].attack=(int)(1.5*monsters[i].attack);
                 monsters[i].strong_attack = monsters[i].attack*5;
                 monsters[i].defense=(int)(1.5*monsters[i].defense);
                 monsters[i].max_data=(int)(1.5*monsters[i].max_data);
-                monsters[i].data=(int)(1.5*monsters[i].data);
+                monsters[i].data=(int)(monsters[i].max_data);
 
             }
         }
