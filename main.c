@@ -23,7 +23,7 @@
 int run_pvp_mode(int sock);
 
 
-int Player_DATA_BAR_WIDTH = 200; // 원준이 전역변수
+int Player_DATA_BAR_WIDTH = 500; // 원준이 전역변수
 int ROUND_MON_NO=0; // 라운드에 처치한 몬스터 수 인듯?
 
 extern MonsterInfo monsters[];//원준 - 수정정
@@ -92,7 +92,6 @@ int main(int argc, char *argv[]) {
         initialize_game();
         game_loop(); // PVE 게임루프
         Player.max_data = Player.data;
-        //loading_screen(1); // PVP모드로 들어가기 위한 인터페이스를 띄운다.
         int pvp_result = run_pvp_mode(sock);
         close(sock);
         

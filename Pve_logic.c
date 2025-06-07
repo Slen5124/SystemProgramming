@@ -344,18 +344,19 @@
         
         if (*round % 7 == 0) { // 보스 라운드
         
-            monsters[3].attack*=2;
+            monsters[3].attack=(int)(1.5*monsters[3].attack);
             monsters[3].strong_attack = monsters[3].attack*5;
-            monsters[3].defense*=2;
-            monsters[3].max_data*=2;
-            monsters[3].data=monsters[3].max_data;
+            monsters[3].defense=(int)(1.5*monsters[3].defense);
+            monsters[3].max_data=(int)(1.5*monsters[3].max_data);
+            monsters[3].data=(int)(1.5*monsters[3].data);
 
             for(int i=0;i<3;i++){
-                monsters[i].attack*=2;
+                monsters[i].attack=(int)(1.5*monsters[i].attack);
                 monsters[i].strong_attack = monsters[i].attack*5;
-                monsters[i].defense*=2;
-                monsters[i].max_data*=2;
-                monsters[i].data=monsters[i].max_data;
+                monsters[i].defense=(int)(1.5*monsters[i].defense);
+                monsters[i].max_data=(int)(1.5*monsters[i].max_data);
+                monsters[i].data=(int)(1.5*monsters[i].data);
+
             }
         }
 
@@ -406,7 +407,7 @@
             monster_turn(&monsters[monster_No], &Player, monster_action_result, round, turn, selected_action, monster_No);
             
             turn++;
-            if(Player.data < 0){winner_ending_screen();}
+            if(Player.data <= 0){loser_ending_screen();}
             if (monsters[monster_No].data <= 0) {
                 handle_round_end(&round, &turn, &cure_data, &boss_count, 
                             bonus_rand, &monster_No);

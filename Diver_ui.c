@@ -55,11 +55,11 @@ void reset_stat() {
         fclose(file); // 파일 닫기
     }
     Player.pause_access = 1;
-    Player.store_access = 0;
+    Player.store_access = 0;    
     Player.start_time = 0;
 
     Player.id = 0;
-    Player.data = 200;
+    Player.data = 500;
     Player.atk_stat = 20;
     Player.dfs_stat = 20;
     Player.pve_start_bit = 3;

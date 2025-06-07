@@ -21,7 +21,7 @@ MonsterInfo monsters[] = {
             "⠀⠀⠀⠀⠀⠙⠹⡳⡻⠽⡚⠊⠁⠁⠀⠀⠀⠀",
             "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
         },
-        150, 150, 3, 30,150,30  // max_data, data, bit, attack, strong_attack, defense
+        150, 150, 3, 20,100,20  // max_data, data, bit, attack, strong_attack, defense
     },
     {
         "루트킷",
@@ -36,10 +36,10 @@ MonsterInfo monsters[] = {
             "⠠⠀⠀⠀⠀⠀⠀⠀⠱⠑⠁⠀⠀⠂⠀⠀⠀⡀",
             ""
         },
-        150, 150, 3, 40, 200, 20   // max_data, data, bit, attack, strong_attack, defense
+        150, 150, 3, 25, 125, 25   // max_data, data, bit, attack, strong_attack, defense
     },
     {
-        "쥐피티",
+        "G피티",
         {
             "⠀⠀⠀⠀⢀⣴⠾⠟⠻⠷⣦⣀⣀⣀⠀⠀⠀⠀",
             "⠀⠀⣀⣠⣿⠁⠀⣀⣤⡾⠟⠋⠉⠙⠻⣦⡀⠀",
@@ -51,10 +51,10 @@ MonsterInfo monsters[] = {
             "⠀⠈⠻⣦⣄⣀⣠⣴⡾⠛⠉⠀⢀⣾⠋⠁⠀⠀",
             "⠀⠀⠀⠀⠉⠉⠉⠻⢶⣦⣴⡶⠟⠁⠀⠀⠀⠀"
         },
-        200, 200, 3, 30, 150, 40  // max_data, data, bit, attack, strong_attack, defense
+        200, 200, 3, 20, 100, 40  // max_data, data, bit, attack, strong_attack, defense
     },
     {
-        "[BOSS] 닐론 머크스",
+        "[BOSS] Cyber MUSK",
         {
             "⠀⠀⠀⢐⢵⡺⠪⠩⠋⠟⠚⠪⢓⡽⢖⠀⠀⠀",
             "⠀⠀⠀⢉⢗⠜⠈⢀⠀⠀⠀⢐⠨⡸⡊⠄⠀⠀",
@@ -148,7 +148,7 @@ void draw_ui(PlayerState Player, MonsterInfo monster, int round,int monster_No) 
     mvprintw(17, 5, "⠀⠀⠀⠀⡠⠌⡀⠐⡀⢌⡑⠠⢈⠐⠠⠈⡐⠠⠠⠀⠀⠀⠀⠀⠀");
     mvprintw(18, 5, "⠀⢠⢣⡑⢆⠐⡀⠐⡆⢄⠣⠐⠨⠐⠠⠀⠐⠀⠂⠈⢄⠀⠀⠀⠀");
 
-    mvprintw(21, 5, "🧑 플레이어");
+    mvprintw(21, 5, "🧑 %s",Player.nick);
     draw_data_bar(23, 5, Player.data, Player_DATA_BAR_WIDTH);
     draw_bit_bar(24, 5, Player.bit, BIT_BAR_WIDTH);
     mvprintw(27, 5, "공격력 : %d      방어력 : %d", Player.atk_stat, Player.dfs_stat);
