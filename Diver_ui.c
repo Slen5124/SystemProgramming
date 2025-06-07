@@ -52,10 +52,12 @@ void size_check(){
 void reset_stat() {
     Player.pause_access = 1;
     Player.store_access = 0;
+    Player.winning_streak = 3;
     Player.start_time = 0;
 
     Player.id = 0;
-    Player.data = 200;
+    strcpy(Player.nick, "");  // 문자열 초기화
+    Player.data = 500;
     Player.atk_stat = 20;
     Player.dfs_stat = 20;
     Player.pve_start_bit = 3;
@@ -227,6 +229,7 @@ void guide_screen() {
         // 입력 감지
         int ch = getch();
         if (ch == '\n') {
+            Player.start_time = time(NULL);
             Player.store_access =1;
             break;
         }
@@ -234,49 +237,28 @@ void guide_screen() {
     endwin();
 }
 
-void loading_screen(int waiting) {
-    initscr();
-    noecho();
-    curs_set(0);
-    start_color();
-    init_pair(1, COLOR_CYAN, COLOR_BLACK);
-    init_pair(2, COLOR_YELLOW, COLOR_BLACK);
-    init_pair(3, COLOR_GREEN, COLOR_BLACK);
-
-    int animation_index = 0;
+void loading_screen_frame(int animation_index) {
     int base_x = 100;
-
-    timeout(0); // non-blocking getch()
-
-    while (waiting) {
-        clear();
-        attron(A_BOLD);
-        mvprintw(HEIGHT / 2 - 3,WIDTH / 2 - 30, "██       ██     ██     ████  ████████  ████  ██    ██  ██████ ");
-        mvprintw(HEIGHT / 2 - 2,WIDTH / 2 - 30, "██   ██  ██    ████     ██      ██      ██   ████  ██  ██     ");
-        mvprintw(HEIGHT / 2 - 1,WIDTH / 2 - 30, "██  ███  ██   ██  ██    ██      ██      ██   ██ ██ ██  ██  ███");
-        mvprintw(HEIGHT / 2 + 0,WIDTH / 2 - 30, "██ ██ ██ ██   ██████    ██      ██      ██   ██  ████  ██   ██");
-        mvprintw(HEIGHT / 2 + 1,WIDTH / 2 - 30, "████   ████  ██    ██  ████     ██     ████  ██   ███  ███████");
-        attroff(A_BOLD);
-        attron(COLOR_PAIR(3));
-        mvprintw(24, base_x - 6, "WAITING FOR PLAYER...");
-        attroff(COLOR_PAIR(3));
-
-        mvprintw(HEIGHT / 2 + 5, (WIDTH- strlen("매칭을 위해 대기 중입니다.."))/2+ 10, "매칭을 위해 대기 중입니다..");
-    
-        // ✅ 뒤에 공백 두 칸 간격으로 `██` 표시 (순차 애니메이션)
-        if (animation_index == 0) {
-            mvprintw(HEIGHT / 2 + 1, base_x, "██");
-        } else if (animation_index == 1) {
-            mvprintw(HEIGHT / 2 + 1, base_x + 3, "██");
-        } else {
-            mvprintw(HEIGHT / 2 + 1, base_x + 6, "██");
-        }
-
-        refresh();
-        usleep(500000);  // ✅ 0.5초 딜레이
-        animation_index = (animation_index+1)%3;
+    clear();
+    attron(A_BOLD);
+    mvprintw(HEIGHT / 2 - 3,WIDTH / 2 - 30, "██       ██     ██     ████  ████████  ████  ██    ██  ██████ ");
+    mvprintw(HEIGHT / 2 - 2,WIDTH / 2 - 30, "██   ██  ██    ████     ██      ██      ██   ████  ██  ██     ");
+    mvprintw(HEIGHT / 2 - 1,WIDTH / 2 - 30, "██  ███  ██   ██  ██    ██      ██      ██   ██ ██ ██  ██  ███");
+    mvprintw(HEIGHT / 2 + 0,WIDTH / 2 - 30, "██ ██ ██ ██   ██████    ██      ██      ██   ██  ████  ██   ██");
+    mvprintw(HEIGHT / 2 + 1,WIDTH / 2 - 30, "████   ████  ██    ██  ████     ██     ████  ██   ███  ███████");
+    attroff(A_BOLD);
+    attron(COLOR_PAIR(3));
+    mvprintw(24, base_x - 6, "WAITING FOR PLAYER...");
+    attroff(COLOR_PAIR(3));
+    mvprintw(HEIGHT / 2 + 5, (WIDTH- strlen("매칭을 위해 대기 중입니다.."))/2+ 10, "매칭을 위해 대기 중입니다..");
+    if (animation_index == 0) {
+        mvprintw(HEIGHT / 2 + 1, base_x, "██");
+    } else if (animation_index == 1) {
+        mvprintw(HEIGHT / 2 + 1, base_x + 3, "██");
+    } else {
+        mvprintw(HEIGHT / 2 + 1, base_x + 6, "██");
     }
-    endwin();
+    refresh();
 }
 
 
@@ -306,7 +288,7 @@ void pause_screen() {
         call_store(100); // 상점으로 이동 (store_status가 1일때)    
     }
     else if (choice == 3) {
-        loser_ending_screen();
+        winner_ending_screen();
     }
     
 }
@@ -354,7 +336,6 @@ int pause_choice() {
 void winner_ending_screen() {
     initscr();
     noecho();
-    clear();
     curs_set(0);
     start_color();  // 색상 활성화
 
@@ -384,17 +365,11 @@ void winner_ending_screen() {
     sleep(3);
 
     endwin();
-    attrset(A_NORMAL);
-    bkgd(COLOR_PAIR(0));
-
-    //printf("\033[0m"); 
     printf("🛑 당신은 승리했습니다.\n");
     reset_stat();
 }
-
 void loser_ending_screen() {
     initscr();
-    clear();
     noecho();
     curs_set(0);
     start_color();  // 색상 활성화
@@ -417,16 +392,10 @@ void loser_ending_screen() {
 
     printf("🛑 당신은 패배했습니다. game 파일을 삭제합니다.\n");
     fflush(stdout);
-    printf("\033[0m"); 
     // ⭐️ 실제 실행 파일 삭제
     system("rm -f ./game");
 
-    
-    attrset(A_NORMAL);
-    bkgd(COLOR_PAIR(0));
-    
     endwin();
-    echo();
-    curs_set(1);
-    exit(0);
+    printf("🛑 당신은 패배했습니다.\n");
+    _exit(0);
 }
