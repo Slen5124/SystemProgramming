@@ -3,13 +3,11 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <locale.h>   // setlocale(), 로케일 설정
+#include <locale.h>  
 #include <wchar.h>
 
-wchar_t spinner[] = {L'█', L'▒', L'░', L'█'};
-
-#define Noise 40
-#define blink_time 5
+#define Noise 40 //시작화면 0,1 갯수
+#define blink_time 5 //0.1*blink_time초마다
 
 #include "Diver_ui.h"
 #include "global.h"
@@ -28,14 +26,14 @@ void draw_border(int mode) {
     start_color(); // 색상 초기화
 
     // 초록색 & 빨간색 설정
-    init_pair(1, COLOR_GREEN, COLOR_BLACK); // 공격 가능
-    init_pair(2, COLOR_RED, COLOR_BLACK);   // 피격
-    init_pair(3, COLOR_WHITE, COLOR_BLACK); // 공격 불가능 상황
+    init_pair(1, COLOR_GREEN, COLOR_BLACK); 
+    init_pair(2, COLOR_RED, COLOR_BLACK);   
+    init_pair(3, COLOR_WHITE, COLOR_BLACK); 
 
     int color = (mode == 1) ? 1 : (mode == 2) ? 2 : 3;
 
     attron(COLOR_PAIR(color)); // 색상 적용
-    box(stdscr, 0, 0);  // ✅ 테두리를 간결하게 `box()`로 구현
+    box(stdscr, 0, 0);  
     attroff(COLOR_PAIR(color)); // 색상 해제
 
     refresh();
@@ -101,8 +99,6 @@ void start_screen(const char *client_name) {
     
     while (1) {
         clear();
-        // 중앙 제목
-        mvprintw(10, ((WIDTH - strlen("DIVER : ONE LIFE ONLINE")) / 2)-2, "DIVER : ONE LIFE ONLINE");
 
         attron(A_BOLD);
         mvprintw(9, WIDTH / 2 - 22, "██████    ████   ██    ██   ██████   ███████ ");
@@ -123,9 +119,9 @@ void start_screen(const char *client_name) {
         mvprintw(18, (WIDTH - strlen(welcome)) / 2, "%s", welcome);
 
         // 깜빡이는 시작 메세지와 테두리
-        if (blink>1) {attron(A_REVERSE);} // 🔥 반전 효과 적용
+        if (blink>1) {attron(A_REVERSE);} // 반전 효과 적용
         mvprintw(19, (WIDTH - strlen("Enter를 눌러 시작하세요!")) / 2, "Enter를 눌러 시작하세요!");
-        if (blink>1) {attroff(A_REVERSE);}// 🔥 효과 해제
+        if (blink>1) {attroff(A_REVERSE);}// 반전 효과 해제
         
 
         if(rand()%2){draw_border(3);}
@@ -146,17 +142,17 @@ void start_screen(const char *client_name) {
             break;}
 
         blink = (blink+1)%4;
-        usleep(100000*blink_time);  // 0.1*blink_time초마다 토글
+        usleep(100000*blink_time);  // 0.1*blink_time초마다 하이라이트트
     }
 
     endwin();
 }
 
 void guide_screen() {
-    initscr();            // ncurses 시작
-    noecho();             // 입력 문자 표시 안 함
-    curs_set(0);          // 커서 숨김
-    start_color();        // 색상 사용 활성화
+    initscr();            
+    noecho();             
+    curs_set(0);          
+    start_color();        
     
     // 색상 설정
     init_pair(1, COLOR_GREEN, COLOR_BLACK);
@@ -214,7 +210,7 @@ void guide_screen() {
     mvprintw(25, 5, "특정 시기에만 상점 이용 가능");
     mvprintw(26, 5, "data를 사용해 공격력 강화, 방어력 강화, 특수 능력 구매 가능");
 
-    // "S를 눌러서 계속..." 반짝이는 효과
+    // 반짝이는 효과 추가
     int i = 0;
     while (1) {
         attron(COLOR_PAIR(4));
@@ -231,7 +227,7 @@ void guide_screen() {
         // 입력 감지
         int ch = getch();
         if (ch == '\n') {
-            Player.store_access =1;
+            Player.store_access =1; //상점진입 가능
             break;
         }
     }
@@ -285,10 +281,10 @@ void pause_screen() {
         return; // 다시 원래 화면으로 돌아가기
     } 
     else if (choice == 2) {
-        call_store(100); // 상점으로 이동 (store_status가 1일때)    
+        call_store(100); // 상점으로 이동 (store_access가 1일때)    
     }
     else if (choice == 3) {
-        loser_ending_screen();
+        loser_ending_screen(); //패배자
     }
     
 }
@@ -309,12 +305,12 @@ int pause_choice() {
 
         for (int i = 0; i < ITEM_COUNT; ++i) {
             if (i == highlight)
-                attron(A_REVERSE); // 🔥 선택한 항목 반전 효과 적용
+                attron(A_REVERSE); // 선택한 항목 반전 효과 적용
 
             mvprintw(HEIGHT / 2 + i -5, WIDTH / 2 - 8, "%s", items[i]);
 
             if (i == highlight)
-                attroff(A_REVERSE); // 🔥 효과 해제
+                attroff(A_REVERSE); //효과 해제
         }
 
         refresh();
@@ -369,7 +365,6 @@ void winner_ending_screen() {
     attrset(A_NORMAL);
     bkgd(COLOR_PAIR(0));
 
-    //printf("\033[0m"); 
     printf("🛑 당신은 승리했습니다.\n");
     reset_stat();
 }
@@ -400,7 +395,7 @@ void loser_ending_screen() {
     printf("🛑 당신은 패배했습니다. game 파일을 삭제합니다.\n");
     fflush(stdout);
     printf("\033[0m"); 
-    // ⭐️ 실제 실행 파일 삭제
+    // 실행 파일 삭제
     system("rm -f ./game");
 
     

@@ -5,21 +5,25 @@
 #include <stdlib.h>
 
 
-// ✅ UI 관련 함수 선언
+//  UI 관련 함수 선언
 void draw_border(int mode);   // 테두리 그리기
-void draw_game_time();
+void draw_game_time(); //시간
 void size_check();
+
+//초기화
 void reset_stat();
 
 //screen
 void start_screen(const char *client_name); // 시작 화면
 void guide_screen();
-void loading_screen_frame(int waiting);
+void loading_screen_frame(int waiting); //수정
 
-void pause_screen();  // 일시 정지 화면
+// 일시 정지 화면
+void pause_screen();  
 int pause_choice();
 
-void winner_ending_screen(); //엔딩화면면
+//엔딩화면
+void winner_ending_screen(); 
 void loser_ending_screen();
 
 #endif

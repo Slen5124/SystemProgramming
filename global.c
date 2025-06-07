@@ -28,9 +28,9 @@ PlayerState Player = {
     .start_time = 0,
 
     .id = 0,
-    .nick = "",  // 문자열 배열 초기화
+    .nick = "",  
     .data = 500,
-    .bit = 3,//5로 수정 -원준
+    .bit = 3,
     .atk_stat = 20,
     .dfs_stat = 20,
     .pve_start_bit = 3,
@@ -47,7 +47,6 @@ PlayerState Player = {
     .delay_until_ms = 0,
     .is_counter_ready = 0,
     .counter_window_start_ms = 0,
-    //.current_action = ACTION_NONE,  // 필요하면 추가
     .block_end_ms = 0,
 
     .buy_atk_cnt = 1,

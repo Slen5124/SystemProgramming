@@ -3,11 +3,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <locale.h>   // setlocale(), 로케일 설정
+#include <locale.h>   
 #include "store.h"
 #include "Diver_ui.h"
 #include "global.h"
-// 병조파트트
+// 병조파트
 // upgrade는 쓸 내용, 로그파일 네임은 저장할 파일
 void write_log_file( char *upgrade, const char *logfilename) {
     FILE *fp = fopen(logfilename, "a, ccs=UTF-8");  // UTF-8로 저장
@@ -24,7 +24,7 @@ void write_log_file( char *upgrade, const char *logfilename) {
 }
 
 
-// upgrade는 쓸 내용, 로그파일 네임은 저장할 파일
+// upgrade는 쓸 내용, 로그파일 네임은 저장할 , nick 맞춰서 출력
 void read_log_file(const char *logfilename, int y_offset, int x_offset) {
     FILE *fp = fopen(logfilename, "r");
     if (fp) {

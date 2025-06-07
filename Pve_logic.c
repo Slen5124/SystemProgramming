@@ -409,8 +409,7 @@
             turn++;
             if(Player.data <= 0){loser_ending_screen();}
             if (monsters[monster_No].data <= 0) {
-                handle_round_end(&round, &turn, &cure_data, &boss_count, 
-                            bonus_rand, &monster_No);
+                handle_round_end(&round, &turn, &cure_data, &boss_count,bonus_rand, &monster_No);
                 display_victory_screen(round, cure_data);
 
                 if(round % 7 == 0){

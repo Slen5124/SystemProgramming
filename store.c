@@ -1,10 +1,9 @@
-// store.c
 #include <ncurses.h>
 #include <time.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <locale.h>   // setlocale(), 로케일 설정
+#include <locale.h> 
 #include "store.h"
 #include "Diver_ui.h"
 #include "global.h"
@@ -105,8 +104,8 @@ void draw_store_ui(int highlight, int time_left) {
     draw_border(3);  // erase() 제거로 화면 전체 초기화 방지
     draw_game_time();
     
-    // ✅ 1사분면 (플레이어 정보) 오른쪽 5칸
-    mvprintw(2, WIDTH / 2 + 20, "[플레이어 정보]");
+    //  1사분면 (플레이어 정보 + item 정보보) 
+    mvprintw(2, WIDTH / 2 + 20, "[%s 정보]",Player.nick)s;
     mvprintw(4, WIDTH / 2 + 20, "데이터: %4d", Player.data);             if(Player.ability_dup_check[0]==true){mvprintw(4, WIDTH / 2 + 35, "PVE 시작 비트: %d", Player.pve_start_bit);}
     mvprintw(5, WIDTH / 2 + 20, "공격력: %4d", Player.atk_stat);         if(Player.ability_dup_check[1]==true){mvprintw(5, WIDTH / 2 + 35, "PVE Data 수급량: %d", Player.pve_data_intake);}
     mvprintw(6, WIDTH / 2 + 20, "방어력: %4d", Player.dfs_stat);         if(Player.ability_dup_check[2]==true){mvprintw(6, WIDTH / 2 + 35, "PVE 강력 공격 계수: %d", Player.pve_strong_atk_stat);}
@@ -115,10 +114,9 @@ void draw_store_ui(int highlight, int time_left) {
                                                                         if(Player.ability_dup_check[5]==true){ mvprintw(9, WIDTH / 2 + 35, "PVP 강한차지 충전량 : %1.1f", Player.pvp_charge_strong);}
 
 
-    // ✅ 2사분면 (상점 상품)
+    //  2사분면 (상점 상품)
     mvprintw(2, 2, "[상점 상품]");
      
-    // 🔥 가로 3칸 구분, 세로 간격 늘리기
     mvprintw(4, 2,  "------------------------------------------------------------------------------");
     mvprintw(5, 2,  "|                        |                        |                          |");
     mvprintw(6, 2,  "|     공격력  강화       |     방어력  강화       |       특수능력 구매      |");
@@ -132,13 +130,13 @@ void draw_store_ui(int highlight, int time_left) {
     mvprintw(12, 2, "|    필요 데이터: %3d    |    필요 데이터: %3d    |      %s %s     |", 10 * Player.buy_atk_cnt, 10 * Player.buy_dfs_cnt,Player.ability_sort==Special_ablity_COUNT?"            ":"필요 데이터:",Player.ability_sort==Special_ablity_COUNT?"  ":"50");
     mvprintw(13, 2, "------------------------------------------------------------------------------");
 
-    // ✅ 3사분면 (로그) 아래로 5칸
+    // 3사분면 (로그)
     int log_y_offset = HEIGHT / 2;
     mvprintw(log_y_offset, 2, "[업그레이드 내역]");
     read_log_file("upgrade_log.txt", log_y_offset,2);
 
 
-    // ✅ 4사분면 (선택 메뉴) → 오른쪽 5칸, 아래 5줄
+    // 4사분면 (선택 메뉴)
     int select_y_offset = HEIGHT / 2;
     int select_x_offset = WIDTH / 2  + 23;
 
@@ -149,10 +147,9 @@ void draw_store_ui(int highlight, int time_left) {
         if (i == highlight) attroff(A_REVERSE);
     }
 
-    // ✅ 타임아웃 정보
+    // 타임아웃 정보
     mvprintw(HEIGHT - 3, 2, "선택하려면 Enter, 타임아웃 %d초...", time_left);
 
-    // ✅ 깜빡임 최소화용 최종 출력
     wnoutrefresh(stdscr);
     doupdate();
 }
@@ -183,7 +180,7 @@ int store_menu_ui(int time_limit,time_t start) {
             endwin();
             return highlight;
         }
-        napms(50);  // ✅ 깜빡임 줄이기, CPU 부하도 낮음
+        napms(50);  
     }
 
     endwin();

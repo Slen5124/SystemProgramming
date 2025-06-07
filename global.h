@@ -3,7 +3,6 @@
 
 #include <stdbool.h>
 #include <time.h>
-//#include "shared_eco.h" // 이미 ActionType이 정의되어 있음
 
 // 게임 화면 크기
 #define HEIGHT 35
@@ -29,12 +28,13 @@ typedef struct {
 
     // 플레이어 데이터
     int id;
-    char nick[32];  // 일반 문자열 배열로 수정
+    char nick[32];  
     int data;
     int bit;//수정-원준
     int max_data;
     int atk_stat;
     int dfs_stat;
+
     int pve_start_bit;
     int pve_data_intake;
     int pve_strong_atk_stat;
@@ -50,7 +50,7 @@ typedef struct {
     long long delay_until_ms;
     int is_counter_ready;
     long long counter_window_start_ms;
-    ActionType current_action; // shared_eco.h에서 가져옴
+    ActionType current_action; 
     long long block_end_ms;
 
     // 상점 관련 데이터
@@ -63,7 +63,7 @@ typedef struct {
 
 } PlayerState;
 
-// 전역 플레이어 변수 선언 (실제 정의는 다른 C 파일에서)
+// 전역 플레이어 변수 선언 
 extern PlayerState Player;
 
 #define DELAY_ATTACK 1000
