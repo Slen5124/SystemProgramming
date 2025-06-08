@@ -29,18 +29,22 @@ static char logs[LOG_LINES][BUF_SIZE];
 static int  logi = 0;
 static char opponent_name[32] = "???";
 
+// 로그 쌓기
 void add_log(const char *msg) {
     strncpy(logs[logi % LOG_LINES], msg, BUF_SIZE - 1);
     logs[logi % LOG_LINES][BUF_SIZE - 1] = '\0';
     logi++;
 }
 
+// 로그 그리기
 void draw_logs() {
     int start = logi > LOG_LINES ? logi - LOG_LINES : 0;
     for (int i = 0; i < LOG_LINES; i++)
         mvprintw(28 + i, 4, "%s", logs[(start + i) % LOG_LINES]);
 }
 
+
+// 체력 바
 void draw_bar(int y, int x, int val, int max_val, const char *lab){
     int v = val<0?0:(val>max_val?max_val:val);
     int f = v*BAR_LEN/max_val;
@@ -49,12 +53,14 @@ void draw_bar(int y, int x, int val, int max_val, const char *lab){
     printw(" %3d/%3d", v, max_val);
 }
 
+// 컨트롤 설정
 void draw_ctrl() {
     mvprintw(28, 90, "[Ctrl+X] ATTACK   [Ctrl+Z] BLOCK");
     mvprintw(30, 90, "[Ctrl+C] Charge×3 [Ctrl+A] Charge×5");
-    mvprintw(32, 90, "[Ctrl+S] COUNTER   [q] Quit");
+    mvprintw(32, 90, "[Ctrl+S] COUNTER");
 }
 
+// 도트아트 그리기 본인
 void draw_dot_art() {
     const char *art[] = {
         "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣀⣤⣠⣄⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
@@ -82,6 +88,7 @@ void draw_dot_art() {
     }
 }
 
+// 도트아트 그리기 상대
 void draw_dot_art_enemy() {
     const char *art[] = {
         "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣀⣤⣠⣄⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
@@ -121,6 +128,7 @@ void draw_dot_art_enemy() {
     }
 }
 
+// 스테이터스 표기
 void draw_status(
     const char* nick,
     int my_data, int my_max_data, int my_charge,
@@ -137,12 +145,13 @@ void draw_status(
     draw_dot_art_enemy();
 }
 
+// PVP게임 메인루프
 int run_pvp_mode(int sock) {
     def_shell_mode();
     setlocale(LC_ALL,"");
 
     char buf[BUF_SIZE];
-    
+    //서버에 레지스터 json 전송
     long long ts = get_current_time_ms();
     snprintf(buf, BUF_SIZE,
         "{\"action\":\"REGISTER\",\"nickname\":\"%s\","
@@ -195,15 +204,13 @@ int run_pvp_mode(int sock) {
             buf[n] = '\0';
             if (strstr(buf, "Game Started")) break;
         }
-        // 입력 무시(getch() 호출하지 않으므로 아무 입력도 안 받아짐)
     }
-    // endwin(); // 로딩 종료 후 본게임 ncurses 재시작 필요시
 
     // 본게임 루프
     while(1){
         long long now = get_current_time_ms();
         if(in_delay && now >= delay_until) in_delay=0;
-
+        // 행동 파싱 json
         int ch = getch(), sent = 0;
         if      (ch==24){ ts=now; in_delay=1; delay_until=ts+DELAY_ATTACK;
             snprintf(buf,BUF_SIZE,
