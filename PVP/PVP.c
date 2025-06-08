@@ -1,4 +1,5 @@
-// PVP.c – 이벤트 기반 서버 (ncurses 없이 콘솔)
+// --- PVP.c: 실시간 PVP 서버 메인 ---
+// 2명의 클라이언트와 소켓 통신, 전투 루프/이벤트/상태 관리
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -17,13 +18,15 @@
 #define DEFAULT_ATK  5
 #define DEFAULT_DEF  3
 
+// 파일 디스크립터를 논블로킹(non-blocking) 모드로 설정 (fcntl 사용)
 int set_nonblocking(int fd) {
     int flags = fcntl(fd, F_GETFL, 0);
     return fcntl(fd, F_SETFL, flags | O_NONBLOCK);
 }
 
+// ActionType에 따라 문자열 이벤트로 반환 (로깅/응답용)
 const char* event_str(ActionType a) {
-    switch(a) {
+    switch(a) { 
       case ACTION_CHARGE_WEAK:    return "Charged Weak";
       case ACTION_CHARGE_STRONG:  return "Charged Strong";
       case ACTION_ATTACK:         return "Attacked";
@@ -37,7 +40,7 @@ const char* event_str(ActionType a) {
 void parse_register_json(
     const char* json, char* nick, int nicklen, int* data, int* max_data, int* atk, int* dfs,
     int* pvp_charge_minus, float* pvp_counter_atk_power_stat, float* pvp_charge_strong
-) {
+) { // 초기 스테이터스 설정
     if (nick) strcpy(nick, "");
     if (data) *data = DEFAULT_DATA;
     if (max_data) *max_data = DEFAULT_DATA;
@@ -46,7 +49,7 @@ void parse_register_json(
     if (pvp_charge_minus) *pvp_charge_minus = 0;
     if (pvp_counter_atk_power_stat) *pvp_counter_atk_power_stat = 1.0f;
     if (pvp_charge_strong) *pvp_charge_strong = 1.0f;
-
+    // 문자파싱
     parse_nickname_from_json(json, nick, nicklen);
 
     if (data && strstr(json, "\"data\":")) {
