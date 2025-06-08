@@ -1,4 +1,3 @@
-// json_util.c - 문자열 기반 간단한 JSON 파싱/생성
 #include "json_topic.h"
 #include <string.h>
 #include <stdio.h>
