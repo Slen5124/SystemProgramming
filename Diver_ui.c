@@ -83,6 +83,8 @@ void reset_stat() {
     Player.ability_sort = -1;
     memset(Player.ability_dup_check, false, sizeof(Player.ability_dup_check));
 
+    Player_DATA_BAR_WIDTH=500;
+    
     monsters[0].max_data=150;
     monsters[0].data=150;
     monsters[0].bit=3;
