@@ -33,6 +33,7 @@ PlayerState Player = {
     .bit = 3,
     .atk_stat = 20,
     .dfs_stat = 20,
+    
     .pve_start_bit = 3,
     .pve_data_intake = 50,
     .pve_strong_atk_stat = 5,
@@ -48,10 +49,11 @@ PlayerState Player = {
     .is_counter_ready = 0,
     .counter_window_start_ms = 0,
     .block_end_ms = 0,
-
+    
     .buy_atk_cnt = 1,
     .buy_dfs_cnt = 1,
 
     .ability_sort = -1,
     .ability_dup_check = {false}
+
 };

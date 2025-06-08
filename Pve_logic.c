@@ -8,7 +8,7 @@
     extern MonsterInfo monsters[];
     extern MonsterInfo current_monster;
     extern PlayerState Player;
-    #define PVE_TIME 300
+    #define PVE_TIME 60
 
 
     void monster_turn(MonsterInfo *monster, PlayerState *Player, char *monster_action_result, int round, int turn, int selected_action, int monster_No) {

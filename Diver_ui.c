@@ -12,7 +12,7 @@
 #include "Diver_ui.h"
 #include "global.h"
 #include "store.h"
-
+#include "Pve_game.h"
 
 void draw_game_time() {
     time_t now = time(NULL);
@@ -58,6 +58,7 @@ void reset_stat() {
 
     Player.id = 0;
     Player.data = 500;
+    Player.max_data=500;
     Player.atk_stat = 20;
     Player.dfs_stat = 20;
     Player.pve_start_bit = 3;
@@ -81,6 +82,35 @@ void reset_stat() {
 
     Player.ability_sort = -1;
     memset(Player.ability_dup_check, false, sizeof(Player.ability_dup_check));
+
+    monsters[0].max_data=150;
+    monsters[0].data=150;
+    monsters[0].bit=3;
+    monsters[0].attack=20;
+    monsters[0].strong_attack=100;
+    monsters[0].defense=20;
+
+    monsters[1].max_data=150;
+    monsters[1].data=150;
+    monsters[1].bit=3;
+    monsters[1].attack=25;
+    monsters[1].strong_attack=125;
+    monsters[1].defense=25;
+
+    monsters[2].max_data=200;
+    monsters[2].data=200;
+    monsters[2].bit=3;
+    monsters[2].attack=20;
+    monsters[2].strong_attack=100;
+    monsters[2].defense=40;
+
+    monsters[3].max_data=300;
+    monsters[3].data=300;
+    monsters[3].bit=5;
+    monsters[3].attack=45;
+    monsters[3].strong_attack=225;
+    monsters[3].defense=45;
+
 }
 
 
@@ -195,8 +225,8 @@ void guide_screen() {
     mvprintw(12, 49, "⚡ PvP 모드");
     mvprintw(13, 51, "실시간 전투 → 입력 즉시 반영");
     mvprintw(14, 51, "- 기본 조작 키");
-    mvprintw(15, 51,"  - Ctrl + A : 강한 충전 (공격력 x 5 충전, 딜레이 5초)");
-    mvprintw(16, 51,"  - Ctrl + C : 일반 충전 (공격력 x 3 충전, 딜레이 3초)");
+    mvprintw(15, 51,"  - Ctrl + A : 강한 충전 (공격력 x 1 충전, 딜레이 5초)");
+    mvprintw(16, 51,"  - Ctrl + C : 일반 충전 (공격력 x 0.5 충전, 딜레이 3초)");
     mvprintw(17, 51,"  - Ctrl + X : 해방 (충전된 공격력을 상대에게 전달)");
     mvprintw(18, 51,"  - Ctrl + Z : 방어 (3초간 방어력 x 3 적용, 공격받으면 피해 감소)");
     mvprintw(19, 51,"  - Ctrl + S : 카운터 (0.5초 이내 성공 시 반격, 실패 시 상대 공격력만큼 피해)");

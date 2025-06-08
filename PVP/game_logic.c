@@ -11,6 +11,8 @@ void apply_action(PlayerState *actor, PlayerState *opponent) {
     switch (actor->current_action) {
         case ACTION_CHARGE_WEAK: // 충전
             actor->charged_attack += (int)(actor->atk_stat * 0.5 + actor->pvp_charge_minus / 10);
+            if (actor->charged_attack > 500)
+            actor->charged_attack = 500;
             break;
 
         case ACTION_CHARGE_STRONG: { // 강충전
@@ -18,6 +20,8 @@ void apply_action(PlayerState *actor, PlayerState *opponent) {
             int total = (int)(base * actor->pvp_charge_strong);
             printf("[DEBUG] 강공격 base=%d, coef=%.2f, total=%d\n", base, actor->pvp_charge_strong, total);
             actor->charged_attack += total;
+            if (actor->charged_attack > 500)
+            actor->charged_attack = 500;
             break;
             }
         case ACTION_ATTACK: { // 공격

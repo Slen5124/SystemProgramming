@@ -105,7 +105,7 @@ void draw_store_ui(int highlight, int time_left) {
     draw_game_time();
     
     //  1사분면 (플레이어 정보 + item 정보보) 
-    mvprintw(2, WIDTH / 2 + 20, "[%s 정보]",Player.nick)s;
+    mvprintw(2, WIDTH / 2 + 20, "[%s 정보]",Player.nick);
     mvprintw(4, WIDTH / 2 + 20, "데이터: %4d", Player.data);             if(Player.ability_dup_check[0]==true){mvprintw(4, WIDTH / 2 + 35, "PVE 시작 비트: %d", Player.pve_start_bit);}
     mvprintw(5, WIDTH / 2 + 20, "공격력: %4d", Player.atk_stat);         if(Player.ability_dup_check[1]==true){mvprintw(5, WIDTH / 2 + 35, "PVE Data 수급량: %d", Player.pve_data_intake);}
     mvprintw(6, WIDTH / 2 + 20, "방어력: %4d", Player.dfs_stat);         if(Player.ability_dup_check[2]==true){mvprintw(6, WIDTH / 2 + 35, "PVE 강력 공격 계수: %d", Player.pve_strong_atk_stat);}

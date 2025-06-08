@@ -137,10 +137,10 @@ void draw_status(
 ) {
     mvprintw(1, 2,  "🧑 You:   %-12s", nick);
     draw_bar(3, 2, my_data, my_max_data, "DATA");
-    draw_bar(5, 2, my_charge, 200, "⚡CHARGE");
+    draw_bar(5, 2, my_charge, 500, "⚡CHARGE");
     mvprintw(1, 90, "👾Enemy:  %-12s", opponent_name);
     draw_bar(3, 90, en_data, en_max_data, "DATA");
-    draw_bar(5, 90, en_charge, 200, "⚡CHARGE");
+    draw_bar(5, 90, en_charge, 500, "⚡CHARGE");
     draw_dot_art();
     draw_dot_art_enemy();
 }
