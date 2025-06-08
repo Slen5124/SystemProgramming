@@ -5,32 +5,32 @@
 #include "game_logic.h"
 #include "../global.h"
 
-// 즉시 적용
+// 예약된 행동을 실제로 실행 _ 모든 데미지, 딜레이, 카운터 처리
 void apply_action(PlayerState *actor, PlayerState *opponent) {
     long long now = get_current_time_ms();
     switch (actor->current_action) {
-        case ACTION_CHARGE_WEAK:
-            actor->charged_attack += actor->atk_stat * 3 + actor->pvp_charge_minus / 10;
+        case ACTION_CHARGE_WEAK: // 충전
+            actor->charged_attack += (int)(actor->atk_stat * 0.5 + actor->pvp_charge_minus / 10);
             break;
 
-        case ACTION_CHARGE_STRONG: {
-            int base = actor->atk_stat * 5 + actor->pvp_charge_minus / 10;
+        case ACTION_CHARGE_STRONG: { // 강충전
+            int base = (int)(actor->atk_stat + actor->pvp_charge_minus / 10);
             int total = (int)(base * actor->pvp_charge_strong);
             printf("[DEBUG] 강공격 base=%d, coef=%.2f, total=%d\n", base, actor->pvp_charge_strong, total);
             actor->charged_attack += total;
             break;
             }
-        case ACTION_ATTACK: {
+        case ACTION_ATTACK: { // 공격
             int dmg = actor->charged_attack;
             actor->charged_attack = 0;
 
-            // 1) 방어막 우선 적용
+            // 방어막 우선 적용
             if (opponent->defense_shield > 0 && now <= opponent->block_end_ms) {
                 int sh = opponent->defense_shield;
                 dmg = (dmg > sh ? dmg - sh : 0);
                 opponent->defense_shield = 0;
             }
-            // 2) 카운터 성공 판정
+            // 카운터 성공 판정
             else if (opponent->is_counter_ready &&
                      now - opponent->counter_window_start_ms <= COUNTER_WINDOW) {
                 // 반사
@@ -42,7 +42,7 @@ void apply_action(PlayerState *actor, PlayerState *opponent) {
                 opponent->is_in_delay      = 0;
                 return;
             }
-            // 3) 일반 데미지
+            // 일반 데미지
             opponent->data -= dmg;
             break;
         }
