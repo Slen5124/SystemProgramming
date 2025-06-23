@@ -1,10 +1,24 @@
-프로젝트 제목 소개, 주요 기능 목록
+# **DIVER : ONE LIFE ONLINE**
 
- [플레이 동영상]
+## 주요 기능 목록
+
+#### PVE
+
+#### global.c /.h
+
+#### store.c /.h
+
+#### diver_ui.c /.h
+
+#### log.c /.h
+
+#### PVE
+
+## [플레이 동영상]
 
 00.LOSER : https://www.youtube.com/watch?v=fSdrv4mLDfk 
 
--이 영상은 서버를 만들고 플레이어가 패배하고 게임 실행파일이 삭제되기까지의 전체 과정을 빠른 재생으로 담아냈습니다. 
+- 이 영상은 서버를 만들고 플레이어가 패배하고 게임 실행파일이 삭제되기까지의 전체 과정을 빠른 재생으로 담아냈습니다. 
 PVE, 상점 이용, PVP 전투를 간결하게 보여줍니다.
 
 01.WINNER : https://www.youtube.com/watch?v=zuqgisVv3pA
@@ -13,14 +27,14 @@ PVE, 상점 이용, PVP 전투를 간결하게 보여줍니다.
 새로운 게임에 들어가며 연승 수가 늘었고, 이를 제외한 데이터들은 초기화되었습니다.
 
 02.Store : https://www.youtube.com/watch?v=jyIqrt0OGdk
-- 이 영상은 PVE 중 퍼일시정지로 상점에 이동해 아이템을 전부 구매하는 과정을 담고 있습니다.
+- 이 영상은 PVE 중 일시정지로 상점에 이동해 아이템을 전부 구매하는 과정을 담고 있습니다.
 
 
- 빌드 및 실행 방법
+ ## [빌드 및 실행 방법]
 
- 게임 내 가이드 화면
+ 또한 게임 내에서 아래와 같은 자세한 조작법이 담긴 가이드 화면을 제공했습니다.
  ![image](https://github.com/user-attachments/assets/3e4f3dcd-e9aa-4023-b1fe-6aa4105ecdc5)
 
 
 
- 팀원 정보 등
+ ## [팀원 정보]
