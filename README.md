@@ -49,7 +49,7 @@
     const char* json, char* nick, int nicklen, int* data, int* max_data, int* atk, int* dfs,
     int* pvp_charge_minus, float* pvp_counter_atk_power_stat, float* pvp_charge_strong
 );
-- json 파일 파싱 함
+- json 파일 파싱 함수수
 
 ### int run_pvp_mode(int sock);
 - 메인 PVP 게임 루프 함수
