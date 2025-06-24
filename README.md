@@ -2,7 +2,29 @@
 
 ## 주요 기능 목록
 
-### 원준함수
+### [pve_game.h]
+
+### [pve_logic.c]
+
+### [pve_ui.c]
+
+### void monster_turn(MonsterInfo *monster, PlayerState *Player, char *monster_action_result, int round, int turn, int selected_action, int monster_No);
+- 몬스터 턴에 시행되는 몬스터의 행동 패턴 정의 및 실행함수
+
+### int wait_for_input_with_timeout(int *selected_action, int timeout_sec, int turn, int round, PlayerState Player, MonsterInfo monster, char *player_action_result, char *monster_action_result,int monster_No);
+- 제한시간 안에 액션을 위해 대기를 하며 시간초과, 엔터 입력을 통해 입력을 확정하는 함수
+
+### void bonus_round(int boss_count, PlayerState *Player);
+- 보너스 문제 출제 및 정답처리함수
+  
+### void handle_player_action(int selected_action, char* player_action_result,int monster_No);
+- 플레이어 액션처리함수
+
+### void handle_round_end(int* round, int* turn, int* cure_data, int* boss_count, int bonus_rand, int* monster_No);
+- 라운드 종료처리 함수
+
+### void game_loop();
+- 메인 게임 루프 함수
 
 ### [global.c /.h]
 
@@ -45,3 +67,19 @@ PVE, 상점 이용, PVP 전투를 간결하게 보여줍니다.
 
 
  ## [팀원 정보]
+
+ 강원준 
+:  Pve_game.h, Pve_ui.c, Pve_logic.c 파일 제작.
+ 몬스터 라운드별 턴제 전투 PVE 개발, 몬스터 UI 그래픽 구상, 이스터 에그 기능 추가, 구조체 인자명 및 포인터 타입 통일, PPT 제작 및 편집
+
+김병조 
+: global.c, global.h, store.c, store.h, diver_ui.c, diver_ui.h, log.c, log.h 파일 제작
+ 전역변수 관리 및 통합, 상점 코드 구현, 전체 인터페이스 및 편의 기능 구현, 시그널 핸들링 적용, 통합 디버깅, 
+데모 영상 제작 및 편집
+
+이윤한 
+: game_logic.c, game_logic.h, json_topic.c, json_topic.h, PVP_C.c, PVP.c 파일 제작.
+ 네트워크 시스템 기반 PVP 개발, 서버 구축 및 관리, 게임 시스템 구조 설계 및 전체 코드 통합, 게임 컨셉 및 
+스토리텔링 구상, 프로젝트 전체 일정 수립 및 진척 관리, 프로젝트 협업 리딩, 게임  내 디자인적 요소 추가 및 툴 제공, 발표
+![image](https://github.com/user-attachments/assets/6f0da9e0-387b-431f-a2e4-a84da85d80b5)
+
