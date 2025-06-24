@@ -1,5 +1,7 @@
 # **DIVER : ONE LIFE ONLINE**
 
+### [소개] : Diver : one life online 은 멀지 않은 미래 사이버디스토피아를 배경으로 PVE,PVP를 진행하는 게임입니다. 게임의 설정상 한번의 패배시, 게임은 영구히 삭제됩니다.
+
 ## 주요 기능 목록
 
 ### [pve_game.h]
@@ -14,9 +16,6 @@
 ### int wait_for_input_with_timeout(int *selected_action, int timeout_sec, int turn, int round, PlayerState Player, MonsterInfo monster, char *player_action_result, char *monster_action_result,int monster_No);
 - 제한시간 안에 액션을 위해 대기를 하며 시간초과, 엔터 입력을 통해 입력을 확정하는 함수
 
-### void bonus_round(int boss_count, PlayerState *Player);
-- 보너스 문제 출제 및 정답처리함수
-  
 ### void handle_player_action(int selected_action, char* player_action_result,int monster_No);
 - 플레이어 액션처리함수
 
@@ -40,7 +39,20 @@
 -상점의 로그 파일을 읽어 해당 닉네임의 최근 5개 로그에서 구매정보만을 보여주는 함수 
 
 
-### 윤한함수
+### Server [PVP.c]
+### ㄴ[json_topic.c / .h]
+
+### Client [PVP_C.c]
+### ㄴ[game_logic.c / .h]
+
+### void parse_register_json(
+    const char* json, char* nick, int nicklen, int* data, int* max_data, int* atk, int* dfs,
+    int* pvp_charge_minus, float* pvp_counter_atk_power_stat, float* pvp_charge_strong
+);
+- json 파일 파싱 함
+
+### int run_pvp_mode(int sock);
+- 메인 PVP 게임 루프 함수
 
 
 ## [플레이 동영상]
@@ -81,5 +93,3 @@ PVE, 상점 이용, PVP 전투를 간결하게 보여줍니다.
 : game_logic.c, game_logic.h, json_topic.c, json_topic.h, PVP_C.c, PVP.c 파일 제작.
  네트워크 시스템 기반 PVP 개발, 서버 구축 및 관리, 게임 시스템 구조 설계 및 전체 코드 통합, 게임 컨셉 및 
 스토리텔링 구상, 프로젝트 전체 일정 수립 및 진척 관리, 프로젝트 협업 리딩, 게임  내 디자인적 요소 추가 및 툴 제공, 발표
-![image](https://github.com/user-attachments/assets/6f0da9e0-387b-431f-a2e4-a84da85d80b5)
-
