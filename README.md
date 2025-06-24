@@ -12,6 +12,12 @@
 
 #### - log.c /.h
 
+###### void write_log_file(const char *upgrade, const char *logfilename);
+-상점의 로그 파일에 닉네임과 시간, 구매정보를 작성하는 함수
+
+###### 상점의 로그 파일을 읽어 해당 닉네임의 최근 5개 로그에서 구매정보만을 보여주는 함수 
+-void read_log_file(const char *logfilename, int y_offset,int x_offset);
+
 #### - PVE
 
 ## [플레이 동영상]
