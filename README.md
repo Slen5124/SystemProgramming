@@ -4,13 +4,13 @@
 
 ### 원준함수
 
-### - global.c /.h
+### [global.c /.h]
 
-### - store.c /.h
+### [store.c /.h]
 
-### - diver_ui.c /.h
+### [diver_ui.c /.h]
 
-### - log.c /.h
+### [log.c /.h]
 
 #### void write_log_file(const char *upgrade, const char *logfilename);
 -상점의 로그 파일에 닉네임과 시간, 구매정보를 작성하는 함수
