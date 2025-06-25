@@ -2,25 +2,30 @@
 
 ### [소개] : Diver : one life online 은 멀지 않은 미래 사이버디스토피아를 배경으로 PVE,PVP를 진행하는 게임입니다. 게임의 설정상 한번의 패배시, 게임은 영구히 삭제됩니다.
 
+### 실행 전, 주의사항
+- 본 게임은 UTF - 8 [setlocale(LC_ALL, "en_US.utf-8");] 을 사용합니다. 로케일 설정을 UTF-8 US로 해야 깨지지 않습니다.
+- 더불어 ncurses를 사용해 아래와 같은 sudo 명령어를 사용하여 미리 다운로드 해주셔야 make 파일이 사용가능 합니다.
+    - sudo apt update
+    - sudo apt install libncurses5-dev libncursesw5-dev
+- 이외의 폰트깨짐이 있다면 아래 명령어를 참고해 주십시오.
+    - export LANG=en_US.UTF-8
+    - export LC_ALL=en_US.UTF-8
+
 ## 주요 기능 목록
 
 ### [pve_game.h]
+- pve 게임에 필요한 몬스터 구조체나 함수들을 정의해둔 헤더파일
 
 ### [pve_logic.c]
+- pve 게임의 메인이되는 로직들을 모아둔 파일
+#### 주요 함수 : void monster_turn(MonsterInfo *monster, PlayerState *Player, char *monster_action_result, int round, int turn, int selected_action, int monster_No);
+ - 몬스터 턴에 몬스터의 액션(공격, 방어, Bit충전 등)을 실행 및 관리한다.
+
+#### 주요 함수 : int wait_for_input_with_timeout(int *selected_action, int timeout_sec, int turn, int round, PlayerState Player, MonsterInfo monster, char *player_action_result, char *monster_action_result,int monster_No);
+ - 플레이어 행동에 시간제약을 걸고 액션을 제어한다.
 
 ### [pve_ui.c]
-
-#### void monster_turn(MonsterInfo *monster, PlayerState *Player, char *monster_action_result, int round, int turn, int selected_action, int monster_No);
-- 몬스터 턴에 시행되는 몬스터의 행동 패턴 정의 및 실행함수
-
-#### int wait_for_input_with_timeout(int *selected_action, int timeout_sec, int turn, int round, PlayerState Player, MonsterInfo monster, char *player_action_result, char *monster_action_result,int monster_No);
-- 제한시간 안에 액션을 위해 대기를 하며 시간초과, 엔터 입력을 통해 입력을 확정하는 함수
-
-#### void handle_player_action(int selected_action, char* player_action_result,int monster_No);
-- 플레이어 액션처리함수
-
-#### void handle_round_end(int* round, int* turn, int* cure_data, int* boss_count, int bonus_rand, int* monster_No);
-- 라운드 종료처리 함수
+ - 플레이어, 몬스터의 도트그래픽과 플레이어의 스텟을 출력하는 함수들이 모여있는 파일
 
 #### void game_loop();
 - 메인 게임 루프 함수
@@ -47,20 +52,22 @@
 - 상점에서 구매 정보를 txt 파일로 기록하고 이를 상점 방문시 보여주는 파일
 
 ### Server [PVP.c]
-### ㄴ[json_topic.c / .h]
-
-### Client [PVP_C.c]
-### ㄴ[game_logic.c / .h]
-
-### void parse_register_json(
+ - 서버를 열고, 로그를 출력하며 서버를 관리하는 파일
+##### 주요함수 : void parse_register_json(
     const char* json, char* nick, int nicklen, int* data, int* max_data, int* atk, int* dfs,
     int* pvp_charge_minus, float* pvp_counter_atk_power_stat, float* pvp_charge_strong
-);
-- json 파일 파싱 함수수
+); 
+##### 주요함수 : int main();
+ - 서버 소켓팅 및 접속, 수신, 게임승패 전송을 하는 서버의 핵심.
 
-### int run_pvp_mode(int sock);
-- 메인 PVP 게임 루프 함수
+### ㄴ[json_topic.c / .h]
+ - 서버와 클라이언트 간의 JSON 메시지를 처리하는 역할을 하는 파일
 
+### Client [PVP_C.c]
+##### 주요함수 : int run_pvp_mode(int sock);
+ - 소켓을 인자로 받아서 서버에 접속하고 json 파일로 서버와 소통합니다.
+### ㄴ[game_logic.c / .h]
+ - 게임로직이 담긴 파일로 플레이어의 입력처리와 액션, 승패판단을 하는 파일.
 
 ## [플레이 동영상]
 
