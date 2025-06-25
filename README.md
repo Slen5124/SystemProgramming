@@ -1,5 +1,5 @@
 ### [실행 전 주의사항]
-- 본 게임은 UTF - 8 [setlocale(LC_ALL, "en_US.utf-8");] 을 사용합니다. 로케일 설정을 UTF-8 US로 해야 깨지지 않습니다.
+- 본 게임은 UTF - 8 [ setlocale(LC_ALL, "en_US.utf-8"); ] 을 사용합니다. 로케일 설정을 UTF-8 US로 해야 깨지지 않습니다.
 - 더불어 ncurses를 사용해 아래와 같은 sudo 명령어를 사용하여 미리 다운로드 해주셔야 make 파일이 사용가능 합니다.
     - sudo apt update
     - sudo apt install libncurses5-dev libncursesw5-dev
