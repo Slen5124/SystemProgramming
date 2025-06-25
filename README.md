@@ -14,10 +14,10 @@
 
 ### [pve_logic.c]
 - pve 게임의 메인이되는 로직들을 모아둔 파일
-#### 주요 함수 : void monster_turn(MonsterInfo *monster, PlayerState *Player, char *monster_action_result, int round, int turn, int selected_action, int monster_No);
+##### 주요 함수 : void monster_turn(MonsterInfo *monster, PlayerState *Player, char *monster_action_result, int round, int turn, int selected_action, int monster_No);
  - 몬스터 턴에 몬스터의 액션(공격, 방어, Bit충전 등)을 실행 및 관리한다.
 
-#### 주요 함수 : int wait_for_input_with_timeout(int *selected_action, int timeout_sec, int turn, int round, PlayerState Player, MonsterInfo monster, char *player_action_result, char *monster_action_result,int monster_No);
+##### 주요 함수 : int wait_for_input_with_timeout(int *selected_action, int timeout_sec, int turn, int round, PlayerState Player, MonsterInfo monster, char *player_action_result, char *monster_action_result,int monster_No);
  - 플레이어 행동에 시간제약을 걸고 액션을 제어한다.
 
 ### [pve_ui.c]
@@ -49,10 +49,7 @@
 
 ### Server [PVP.c]
  - 서버를 열고, 로그를 출력하며 서버를 관리하는 파일
-##### 주요함수 : void parse_register_json(
-    const char* json, char* nick, int nicklen, int* data, int* max_data, int* atk, int* dfs,
-    int* pvp_charge_minus, float* pvp_counter_atk_power_stat, float* pvp_charge_strong
-); 
+##### 주요함수 : void parse_register_json(const char* json, char* nick, int nicklen, int* data, int* max_data, int* atk, int* dfs,int* pvp_charge_minus, float* pvp_counter_atk_power_stat, float* pvp_charge_strong); 
 ##### 주요함수 : int main();
  - 서버 소켓팅 및 접속, 수신, 게임승패 전송을 하는 서버의 핵심.
 
