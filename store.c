@@ -26,53 +26,28 @@ extern int Player_DATA_BAR_WIDTH;
 void call_store(int time_limit){ 
     clear();
     refresh();
-    int choice =1;
+    int choice = 1;
     Player.store_access = 0;
     time_t start = time(NULL);
     rand_ability_no_dup();
-    while(choice!=3){
-        choice = store_menu_ui(time_limit,start); // 상점 기능 호출
+
+    while (1) {
+        choice = store_menu_ui(time_limit, start);
+
+        if (choice == 3) {
+            printf("상점에서 나갔습니다.\n");
+            break;
+        }
+
+        // ncurses 다시 시작
         initscr();
         handle_buy(choice);
+        endwin();
     }
+
     Player.store_access = 1;
 }
 
-void handle_buy(int choice) {
-    if (choice == 0) {
-        if(Player.data>10*Player.buy_atk_cnt){
-            Player_DATA_BAR_WIDTH-=10*Player.buy_atk_cnt;
-           Player.data-=10*Player.buy_atk_cnt++;
-            Player.atk_stat +=10;
-            write_log_file("공격력  강화","upgrade_log.txt");}
-        else{write_log_file("구매가 불가능합니다","upgrade_log.txt");}
-    } 
-    else if (choice == 1) {
-        if(Player.data>10*Player.buy_dfs_cnt){
-            Player_DATA_BAR_WIDTH-=10*Player.buy_dfs_cnt;
-            Player.data-=10*Player.buy_dfs_cnt++;
-            Player.dfs_stat +=10;
-            write_log_file("방어력  강화","upgrade_log.txt");}
-        else{write_log_file("구매가 불가능합니다","upgrade_log.txt");}
-    }
-    else if (choice == 2) {
-        if(Player.data>50&&Player.ability_sort!=Special_ablity_COUNT){
-            Player_DATA_BAR_WIDTH-=50;
-            Player.data-=50;
-            Player.ability_dup_check[Player.ability_sort] = true;
-            ability_upgrade(Player.ability_sort);
-            write_log_file("특수능력 구매","upgrade_log.txt");
-            rand_ability_no_dup();
-            mvprintw(9, 42, "|                    ");
-            mvprintw(10, 42,"|                    ");
-        }
-        else{write_log_file("구매가 불가능합니다","upgrade_log.txt");}
-    }    
-    else if(choice ==3){
-        mvprintw(LINES - 2, 1, "상점에서 나갔습니다.");
-    }
-    refresh();
-}
 
 void rand_ability_no_dup(){
     int cnt =0;
