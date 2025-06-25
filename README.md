@@ -17,6 +17,7 @@
 
 ![image](https://github.com/user-attachments/assets/4533fc41-96d2-422c-affa-cfbad8aab846)
 
+#### 프로그램 흐름도
 
 ### [pve_game.h]
 - pve 게임에 필요한 몬스터 구조체나 함수들을 정의해둔 헤더파일
@@ -35,59 +36,7 @@
 #### void game_loop();
 - 메인 게임 루프 함수
 
-### [global.c /.h]
-- 전역변수를 관리하는 파일
-    
-### [diver_ui.c /.h]
-- 게임 전체의 UI와 편의기능을 관리하는 파일
-##### 주요함수 : int pause_choice()
--일시 정지 화면에서 사용자의 선택 입력을 받아 해당 메뉴 항목 번호를 반환한다.
-##### 주요함수 : void loser_ending_screen() 
-- PVP 게임에서 패배자의 엔딩화면을 출력하며,  system() 명령어를 이용해 실행파일을 삭제한다.
-
-
-### [store.c /.h]
-- 능력 및 아이템 구매의 로직과 UI 등 상점과 관련된 함수를 모아둔 파일
-##### 주요함수 : void handle_buy(int choice)
- - 유저가 선택한 선택을 정수형으로 받아 능력 강화 또는 아이템 구매를 실행한다.
-##### 주요함수 : int store_menu_ui(int time_limit,time_t start)     
- - 지정된 시간(time_limit) 동안 상점 UI를 호출하고, 사용자의 입력을 받아 선택 결과를 반환한다.
-
-### [log.c /.h]
-- 상점에서 구매 정보를 txt 파일로 기록하고 이를 상점 방문시 보여주는 파일
-
-### Server [PVP.c]
- - 서버를 열고, 로그를 출력하며 서버를 관리하는 파일
-##### 주요함수 : void parse_register_json(const char* json, char* nick, int nicklen, int* data, int* max_data, int* atk, int* dfs,int* pvp_charge_minus, float* pvp_counter_atk_power_stat, float* pvp_charge_strong); 
-##### 주요함수 : int main();
- - 서버 소켓팅 및 접속, 수신, 게임승패 전송을 하는 서버의 핵심.
-
-### ㄴ[json_topic.c / .h]
- - 서버와 클라이언트 간의 JSON 메시지를 처리하는 역할을 하는 파일
-
-### Client [PVP_C.c]
-##### 주요함수 : int run_pvp_mode(int sock);
- - 소켓을 인자로 받아서 서버에 접속하고 json 파일로 서버와 소통합니다.
-### ㄴ[game_logic.c / .h]
- - 게임로직이 담긴 파일로 플레이어의 입력처리와 액션, 승패판단을 하는 파일.
-
-## [플레이 동영상]
-
-[00.LOSER] : https://www.youtube.com/watch?v=fSdrv4mLDfk 
-
-- 이 영상은 서버를 만들고 플레이어가 패배하고 게임 실행파일이 삭제되기까지의 전체 과정을 빠른 재생으로 담아냈습니다. 
-PVE, 상점 이용, PVP 전투를 간결하게 보여줍니다.
-
-[01.WINNER] : https://www.youtube.com/watch?v=zuqgisVv3pA
- - 이 영상은 PVP에서 승리한 플레이어의 PVP 이후 화면을 담았습니다. 
-승리 후 패배와는 다른 엔딩화면, 그리고 삭제되지 않고 바로 새로운 게임으로 이어지는 과정을 담고 있습니다. 
-새로운 게임에 들어가며 연승 수가 늘었고, 이를 제외한 데이터들은 초기화되었습니다.
-
-[02.Store] : https://www.youtube.com/watch?v=jyIqrt0OGdk
-- 이 영상은 PVE 중 일시정지로 상점에 이동해 아이템을 전부 구매하는 과정을 담고 있습니다.
-
-
- ## [빌드 및 실행 방법]
+### [global.c /.h]임 방법]
 
  또한 게임 내에서 아래와 같은 자세한 조작법이 담긴 가이드 화면을 제공했습니다.
  ![image](https://github.com/user-attachments/assets/3e4f3dcd-e9aa-4023-b1fe-6aa4105ecdc5)
