@@ -24,6 +24,7 @@ const char *Special_ablity_coefficient[Special_ablity_COUNT+1] = { "  +1", "x 1.
 extern int Player_DATA_BAR_WIDTH;
 
 void call_store(int time_limit){ 
+    initscr(); // 여기서 한 번만 시작
     clear();
     refresh();
     int choice = 1;
@@ -35,14 +36,12 @@ void call_store(int time_limit){
         choice = store_menu_ui(time_limit, start);
 
         if (choice == 3) {
+            endwin();  // 종료는 여기서
             printf("상점에서 나갔습니다.\n");
             break;
         }
 
-        // ncurses 다시 시작
-        initscr();
-        handle_buy(choice);
-        endwin();
+        handle_buy(choice); // ncurses 상태 그대로 사용
     }
 
     Player.store_access = 1;
@@ -129,9 +128,8 @@ void draw_store_ui(int highlight, int time_left) {
     doupdate();
 }
 
-int store_menu_ui(int time_limit,time_t start) {
+int store_menu_ui(int time_limit, time_t start) {
     setlocale(LC_ALL, "ko_KR.UTF-8");
-    initscr();
     noecho();
     curs_set(0);
     keypad(stdscr, TRUE);
@@ -152,13 +150,11 @@ int store_menu_ui(int time_limit,time_t start) {
         } else if (ch == KEY_DOWN) {
             highlight = (highlight + 1) % options_COUNT;
         } else if (ch == '\n') {
-            endwin();
             return highlight;
         }
         napms(50);  
     }
 
-    endwin();
     return options_COUNT - 1;
 }
 
