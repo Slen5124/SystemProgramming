@@ -1,4 +1,4 @@
-# **DIVER : ONE LIFE ONLINE**
+![image](https://github.com/user-attachments/assets/af98f409-c9a5-4915-bf68-4100badab4fd)# **DIVER : ONE LIFE ONLINE**
 
 ### [소개] : Diver : one life online 은 멀지 않은 미래 사이버디스토피아를 배경으로 PVE,PVP를 진행하는 게임입니다. 게임의 설정상 한번의 패배시, 게임은 영구히 삭제됩니다.
 
@@ -10,34 +10,41 @@
 
 ### [pve_ui.c]
 
-### void monster_turn(MonsterInfo *monster, PlayerState *Player, char *monster_action_result, int round, int turn, int selected_action, int monster_No);
+#### void monster_turn(MonsterInfo *monster, PlayerState *Player, char *monster_action_result, int round, int turn, int selected_action, int monster_No);
 - 몬스터 턴에 시행되는 몬스터의 행동 패턴 정의 및 실행함수
 
-### int wait_for_input_with_timeout(int *selected_action, int timeout_sec, int turn, int round, PlayerState Player, MonsterInfo monster, char *player_action_result, char *monster_action_result,int monster_No);
+#### int wait_for_input_with_timeout(int *selected_action, int timeout_sec, int turn, int round, PlayerState Player, MonsterInfo monster, char *player_action_result, char *monster_action_result,int monster_No);
 - 제한시간 안에 액션을 위해 대기를 하며 시간초과, 엔터 입력을 통해 입력을 확정하는 함수
 
-### void handle_player_action(int selected_action, char* player_action_result,int monster_No);
+#### void handle_player_action(int selected_action, char* player_action_result,int monster_No);
 - 플레이어 액션처리함수
 
-### void handle_round_end(int* round, int* turn, int* cure_data, int* boss_count, int bonus_rand, int* monster_No);
+#### void handle_round_end(int* round, int* turn, int* cure_data, int* boss_count, int bonus_rand, int* monster_No);
 - 라운드 종료처리 함수
 
-### void game_loop();
+#### void game_loop();
 - 메인 게임 루프 함수
 
 ### [global.c /.h]
+- 전역변수를 관리하는 파일
+    
+### [diver_ui.c /.h]
+- 게임 전체의 UI와 편의기능을 관리하는 파일
+##### 주요함수 : int pause_choice()
+-일시 정지 화면에서 사용자의 선택 입력을 받아 해당 메뉴 항목 번호를 반환한다.
+##### 주요함수 : void loser_ending_screen() 
+- PVP 게임에서 패배자의 엔딩화면을 출력하며,  system() 명령어를 이용해 실행파일을 삭제한다.
+
 
 ### [store.c /.h]
-
-### [diver_ui.c /.h]
+- 능력 및 아이템 구매의 로직과 UI 등 상점과 관련된 함수를 모아둔 파일
+##### 주요함수 : void handle_buy(int choice)
+ - 유저가 선택한 선택을 정수형으로 받아 능력 강화 또는 아이템 구매를 실행한다.
+##### 주요함수 : int store_menu_ui(int time_limit,time_t start)     
+ - 지정된 시간(time_limit) 동안 상점 UI를 호출하고, 사용자의 입력을 받아 선택 결과를 반환한다.
 
 ### [log.c /.h]
-
-#### void write_log_file(const char *upgrade, const char *logfilename);
--상점의 로그 파일에 닉네임과 시간, 구매정보를 작성하는 함수
-#### void read_log_file(const char *logfilename, int y_offset,int x_offset);
--상점의 로그 파일을 읽어 해당 닉네임의 최근 5개 로그에서 구매정보만을 보여주는 함수 
-
+- 상점에서 구매 정보를 txt 파일로 기록하고 이를 상점 방문시 보여주는 파일
 
 ### Server [PVP.c]
 ### ㄴ[json_topic.c / .h]
