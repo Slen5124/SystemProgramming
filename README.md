@@ -1,4 +1,4 @@
-### 실행 전, 주의사항
+### [실행 전 주의사항]
 - 본 게임은 UTF - 8 [setlocale(LC_ALL, "en_US.utf-8");] 을 사용합니다. 로케일 설정을 UTF-8 US로 해야 깨지지 않습니다.
 - 더불어 ncurses를 사용해 아래와 같은 sudo 명령어를 사용하여 미리 다운로드 해주셔야 make 파일이 사용가능 합니다.
     - sudo apt update
@@ -7,7 +7,7 @@
     - export LANG=en_US.UTF-8
     - export LC_ALL=en_US.UTF-8
 
-### 게임 실행시 실행순서
+### [게임 실행순서]
  - make를 실행합니다.
  - ./server.exe 를 입력하여 서버를 먼저 실행합니다.
  - ./game.exe 를 입력하여 클라이언트를 접속합니다. (서버가 먼저 열리고 클라이언트가 접속해야합니다.)
