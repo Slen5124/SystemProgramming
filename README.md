@@ -1,7 +1,3 @@
-![image](https://github.com/user-attachments/assets/af98f409-c9a5-4915-bf68-4100badab4fd)# **DIVER : ONE LIFE ONLINE**
-
-### [소개] : Diver : one life online 은 멀지 않은 미래 사이버디스토피아를 배경으로 PVE,PVP를 진행하는 게임입니다. 게임의 설정상 한번의 패배시, 게임은 영구히 삭제됩니다.
-
 ### 실행 전, 주의사항
 - 본 게임은 UTF - 8 [setlocale(LC_ALL, "en_US.utf-8");] 을 사용합니다. 로케일 설정을 UTF-8 US로 해야 깨지지 않습니다.
 - 더불어 ncurses를 사용해 아래와 같은 sudo 명령어를 사용하여 미리 다운로드 해주셔야 make 파일이 사용가능 합니다.
