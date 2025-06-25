@@ -15,6 +15,9 @@
 
 ## 주요 기능 목록
 
+![image](https://github.com/user-attachments/assets/4533fc41-96d2-422c-affa-cfbad8aab846)
+
+
 ### [pve_game.h]
 - pve 게임에 필요한 몬스터 구조체나 함수들을 정의해둔 헤더파일
 
