@@ -32,7 +32,6 @@ void call_store(int time_limit){
     rand_ability_no_dup();
     while(choice!=3){
         choice = store_menu_ui(time_limit,start); // 상점 기능 호출
-        initscr();
         handle_buy(choice);
     }
     Player.store_access = 1;
