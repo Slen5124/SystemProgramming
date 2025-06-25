@@ -17,7 +17,8 @@
 
 ![image](https://github.com/user-attachments/assets/4533fc41-96d2-422c-affa-cfbad8aab846)
 
-#### 프로그램 흐름도
+#### 프로그램 흐름
+ - server.exe로 PVP.c 의 서버를 열고, game.exe를 통해 main.c의 메인 함수를 실행시킵니다. PVE를 5분간 진행(pve_game.h, pve_logic.c 등이 관여)하며 DATA를 획득합니다. 도중에 상점에도 진입할 수 있으며 DATA를 사용하여 플레이어의 스텟을 강화시킬 수 있습니다. 5분이 끝난 후에는 PVP모드로 넘어가기 전에 마지막으로 상점 이용 후 PVP를 진행(PVP_C.c, game_logic.c/.h 등이 관여)하게 됩니다. 패배한 플레이어는 게임 실행파일이 삭제되며 승리한 플레이어는 스텟이 초기화 된 채로 게임을 다시 시작하게 됩니다. 이름옆에 [n연승] 이라는 칭호도 얻게 됩니다.
 
 ### [pve_game.h]
 - pve 게임에 필요한 몬스터 구조체나 함수들을 정의해둔 헤더파일
