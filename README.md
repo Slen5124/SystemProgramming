@@ -33,7 +33,7 @@
 ### [pve_ui.c]
  - 플레이어, 몬스터의 도트그래픽과 플레이어의 스텟을 출력하는 함수들이 모여있는 파일
 
-#### void game_loop();
+##### 주요 함수 : void game_loop();
 - 메인 게임 루프 함수
 
 ### [global.c /.h]Add commentMore actions
