@@ -1,4 +1,4 @@
-#include <ncurses.h>
+#include <ncurses.h>More actions
 #include <time.h>
 #include <stdlib.h>
 #include <string.h>
@@ -24,29 +24,19 @@ const char *Special_ablity_coefficient[Special_ablity_COUNT+1] = { "  +1", "x 1.
 extern int Player_DATA_BAR_WIDTH;
 
 void call_store(int time_limit){ 
-    initscr(); // 여기서 한 번만 시작
     clear();
     refresh();
-    int choice = 1;
+    int choice =1;
     Player.store_access = 0;
     time_t start = time(NULL);
     rand_ability_no_dup();
-
-    while (1) {
-        choice = store_menu_ui(time_limit, start);
-
-        if (choice == 3) {
-            endwin();  // 종료는 여기서
-            printf("상점에서 나갔습니다.\n");
-            break;
-        }
-
-        handle_buy(choice); // ncurses 상태 그대로 사용
+    while(choice!=3){
+        choice = store_menu_ui(time_limit,start); // 상점 기능 호출
+        initscr();
+        handle_buy(choice);
     }
-
     Player.store_access = 1;
 }
-
 
 void handle_buy(int choice) {
     if (choice == 0) {
@@ -84,7 +74,6 @@ void handle_buy(int choice) {
     refresh();
 }
 
-
 void rand_ability_no_dup(){
     int cnt =0;
     while(1){
@@ -98,7 +87,7 @@ void rand_ability_no_dup(){
 }
 
 void ability_upgrade(int ability_sort){
-    
+
          if(ability_sort == 0){Player.pve_start_bit +=1;}
     else if(ability_sort == 1){Player.pve_data_intake=(Player.pve_data_intake*3)/2;}
     else if(ability_sort == 2){Player.pve_strong_atk_stat =6;}
@@ -114,8 +103,9 @@ void draw_store_ui(int highlight, int time_left) {
     if(cnt<1)cnt++;
     draw_border(3);  // erase() 제거로 화면 전체 초기화 방지
     draw_game_time();
-    
+
     //  1사분면 (플레이어 정보 + item 정보보) 
+    mvprintw(2, WIDTH / 2 + 20, "[%s 정보]",Player.nick)s;
     mvprintw(2, WIDTH / 2 + 20, "[%s 정보]",Player.nick);
     mvprintw(4, WIDTH / 2 + 20, "데이터: %4d", Player.data);             if(Player.ability_dup_check[0]==true){mvprintw(4, WIDTH / 2 + 35, "PVE 시작 비트: %d", Player.pve_start_bit);}
     mvprintw(5, WIDTH / 2 + 20, "공격력: %4d", Player.atk_stat);         if(Player.ability_dup_check[1]==true){mvprintw(5, WIDTH / 2 + 35, "PVE Data 수급량: %d", Player.pve_data_intake);}
@@ -127,7 +117,7 @@ void draw_store_ui(int highlight, int time_left) {
 
     //  2사분면 (상점 상품)
     mvprintw(2, 2, "[상점 상품]");
-     
+
     mvprintw(4, 2,  "------------------------------------------------------------------------------");
     mvprintw(5, 2,  "|                        |                        |                          |");
     mvprintw(6, 2,  "|     공격력  강화       |     방어력  강화       |       특수능력 구매      |");
@@ -165,8 +155,9 @@ void draw_store_ui(int highlight, int time_left) {
     doupdate();
 }
 
-int store_menu_ui(int time_limit, time_t start) {
+int store_menu_ui(int time_limit,time_t start) {
     setlocale(LC_ALL, "ko_KR.UTF-8");
+    initscr();
     noecho();
     curs_set(0);
     keypad(stdscr, TRUE);
@@ -187,11 +178,12 @@ int store_menu_ui(int time_limit, time_t start) {
         } else if (ch == KEY_DOWN) {
             highlight = (highlight + 1) % options_COUNT;
         } else if (ch == '\n') {
+            endwin();
             return highlight;
         }
         napms(50);  
     }
 
+    endwin();
     return options_COUNT - 1;
 }
-
