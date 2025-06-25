@@ -179,10 +179,6 @@ int run_pvp_mode(int sock) {
     init_pair(6, COLOR_WHITE,  COLOR_MAGENTA);
     init_pair(7, COLOR_WHITE,  COLOR_RED);
 
-    while(recv(sock,buf,BUF_SIZE-1,0)<=0);
-    add_log("Game Started");
-    parse_nickname_from_json(buf, opponent_name, sizeof(opponent_name));
-
     int my_data = Player.data, my_max_data = Player.max_data, my_charge = 0;
     int en_data = Player.data, en_max_data = Player.max_data, en_charge = 0;
 
