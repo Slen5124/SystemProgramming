@@ -3,7 +3,7 @@
 - 더불어 ncurses를 사용해 아래와 같은 sudo 명령어를 사용하여 미리 다운로드 해주셔야 make 파일이 사용가능 합니다.
     - sudo apt update
     - sudo apt install libncurses5-dev libncursesw5-dev
-- 이외의 폰트깨짐이 있다면 아래 명령어를 참고해 주십시오.
+- 이외의 폰트깨짐이 있다면 아래 명령어를 참고하시길 바랍니다.
     - export LANG=en_US.UTF-8
     - export LC_ALL=en_US.UTF-8
 
@@ -40,7 +40,6 @@
 
  또한 게임 내에서 아래와 같은 자세한 조작법이 담긴 가이드 화면을 제공했습니다.
  ![image](https://github.com/user-attachments/assets/3e4f3dcd-e9aa-4023-b1fe-6aa4105ecdc5)
-
 
 
  ## [팀원 정보]
