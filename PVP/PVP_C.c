@@ -192,6 +192,7 @@ int run_pvp_mode(int sock) {
     int result = 0;
 
     int animation_index = 0;
+    char recv_buf[1024] = {0};
     while (1) {
         // 1. 로딩 애니메이션 한 프레임 출력
         loading_screen_frame(animation_index);
