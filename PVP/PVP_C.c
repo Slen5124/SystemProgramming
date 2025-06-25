@@ -202,7 +202,8 @@ int run_pvp_mode(int sock) {
         int n = recv(sock, buf, BUF_SIZE-1, MSG_DONTWAIT);
         if (n > 0) {
             buf[n] = '\0';
-            if (strstr(buf, "Game Started")) break;
+            strncat(recv_buf, buf, sizeof(recv_buf) - strlen(recv_buf) - 1);
+            if (strstr(recv_buf, "Game Started")) break;
         }
     }
 
