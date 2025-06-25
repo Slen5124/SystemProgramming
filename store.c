@@ -1,4 +1,4 @@
-#include <ncurses.h>More actions
+#include <ncurses.h>
 #include <time.h>
 #include <stdlib.h>
 #include <string.h>
@@ -104,8 +104,8 @@ void draw_store_ui(int highlight, int time_left) {
     draw_border(3);  // erase() 제거로 화면 전체 초기화 방지
     draw_game_time();
 
-    //  1사분면 (플레이어 정보 + item 정보보) 
-    mvprintw(2, WIDTH / 2 + 20, "[%s 정보]",Player.nick)s;
+    //  1사분면 (플레이어 정보 + item 정보) 
+    mvprintw(2, WIDTH / 2 + 20, "[%s 정보]",Player.nick);
     mvprintw(2, WIDTH / 2 + 20, "[%s 정보]",Player.nick);
     mvprintw(4, WIDTH / 2 + 20, "데이터: %4d", Player.data);             if(Player.ability_dup_check[0]==true){mvprintw(4, WIDTH / 2 + 35, "PVE 시작 비트: %d", Player.pve_start_bit);}
     mvprintw(5, WIDTH / 2 + 20, "공격력: %4d", Player.atk_stat);         if(Player.ability_dup_check[1]==true){mvprintw(5, WIDTH / 2 + 35, "PVE Data 수급량: %d", Player.pve_data_intake);}
